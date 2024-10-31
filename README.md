@@ -9,5 +9,3 @@ For the preprocessing process we have 5 main steps:
 5. Tokenize: This step will turn each word in the dataset into an integer based off a dictionary created by scanning all the headlines
 6. Embeddings: This will be a randomly generated embeddings table that will allow the model to get an embeddings for each word. 
 
-
-I
