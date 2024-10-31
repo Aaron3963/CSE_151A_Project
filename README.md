@@ -1,10 +1,5 @@
 # CSE 151A Project
 ## Milestone 2: Data Exploration & Initial Preprocessing
-clean nulls
-remove extraneous columns (description)
-concat dataset with the appropriate stock date and mash 3 datasets together
-tokenize
-create emeddings
 
 For the preprocessing process we have 5 main steps:
 1. Clean out the nulls: We have found null data within the CNBC network dataset. We will be dropping these rows since we cannot fill the data with random words. 
