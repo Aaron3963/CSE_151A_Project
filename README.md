@@ -21,7 +21,9 @@ Our initial model fits modestly with an accuracy of 54.36%, as per the classific
 
 Things we did:
 Cleaned and combined the dataset. [View Dataset](dataset/final_dataset.csv)
+
 Exploratory Data Analysis. [View EDA](EDA.ipynb)
+
 First model. [View Moddel](Model1.ipynb)
 
 ### Conclusion section: What is the conclusion of your 1st model? What can be done to possibly improve it?
