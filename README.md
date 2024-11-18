@@ -32,4 +32,3 @@ Cleaned and combined the dataset. [View Dataset](dataset/final_dataset.csv)
 Exploratory Data Analysis. [View EDA](EDA.ipynb)
 
 First model. [View Moddel](Model1.ipynb)
-# DSC180A-Methodology-5
