@@ -14,6 +14,8 @@ Model Summary
 1. Features: TF-IDF vectorized text with max_features varying between 50 and 1200.
 2. Training Algorithm: Logistic Regression with 1500 maximum iterations.
 3. Evaluation Metrics: Training and test errors (1 - accuracy rate) were used to analyze model performance and identify underfitting or overfitting.  
+The model achieved 63.8% accuracy on test set and 76.2% on training set.
+
 
 ### Where does your model fit in the fitting graph? and What are the next models you are thinking of and why?
 
@@ -24,10 +26,9 @@ Based on the fitting graph:
 3. Underfitting Zone: At lower values of max_features (e.g., 50–200), both training and test errors were high, reflecting insufficient model complexity.
 
 
-### Conclusion section: What is the conclusion of your 1st model? What can be done to possibly improve it?
+Things we did:
+Cleaned and combined the dataset. [View Dataset](dataset/final_dataset.csv)
 
+Exploratory Data Analysis. [View EDA](EDA.ipynb)
 
-
-### Update your README.md to include your new work and updates you have all added. Make sure to upload all code and notebooks. Provide links in your README.md
-
-
+First model. [View Moddel](Model1.ipynb)
