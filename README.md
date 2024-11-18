@@ -28,6 +28,7 @@ Based on the fitting graph:
 For future models, we plan to focus on natural language processing. The first model we want to try is the basic transformer model where the use of attention could find words that help dictate a positive or negative trend. We also want to explore the use of FinBert which is a model that is specifically trained to analyze sentiment of financial texts. With this model we can hybridize it by attaching an RNN in order to make this problem a regression problem that predicts exactly how much the S&P500 will change by. 
 
 **Model Conclusion**
+
 Overall our model did alright. It had a binary classification task of predicting whether the S&P500 will rise or fall and it did slightly better than just guessing. This was expected since this type of model does not perform any sort of sentiment analysis. Some hyperparameter tuning can be done to improve this model; however, it is very limited in how much it can accomplish given the data. Nonetheless, this model gives us a good baseline for how a model should perform and we hope the future models we implement can outperform it.  
 
 
