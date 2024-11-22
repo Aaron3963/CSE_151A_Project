@@ -28,7 +28,7 @@ jobs:
         run: quarto render project.ipynb --to html
         
       - name: Rename HTML file to index.html
-        run: mv FinalProject.html index.html
+        run: mv project.html index.html
       
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
