@@ -83,13 +83,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#eda-of-the-news-datasets" id="toc-eda-of-the-news-datasets" class="nav-link active" data-scroll-target="#eda-of-the-news-datasets">EDA of the News Datasets</a></li>
-  <li><a href="#stock-price-of-the-sp-500" id="toc-stock-price-of-the-sp-500" class="nav-link" data-scroll-target="#stock-price-of-the-sp-500">Stock Price of the S&amp;P 500</a>
+  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link active" data-scroll-target="#exploratory-data-analysis">Exploratory Data Analysis</a>
   <ul class="collapse">
-  <li><a href="#data-exploration" id="toc-data-exploration" class="nav-link" data-scroll-target="#data-exploration">Data Exploration</a></li>
+  <li><a href="#news-datasets" id="toc-news-datasets" class="nav-link" data-scroll-target="#news-datasets">News Datasets</a>
+  <ul class="collapse">
+  <li><a href="#headline-length" id="toc-headline-length" class="nav-link" data-scroll-target="#headline-length">Headline Length</a></li>
+  <li><a href="#headline-distribution" id="toc-headline-distribution" class="nav-link" data-scroll-target="#headline-distribution">Headline Distribution</a></li>
+  <li><a href="#word-frequency" id="toc-word-frequency" class="nav-link" data-scroll-target="#word-frequency">Word Frequency</a></li>
+  </ul></li>
+  <li><a href="#sp-500-dataset" id="toc-sp-500-dataset" class="nav-link" data-scroll-target="#sp-500-dataset">S&amp;P 500 Dataset</a>
+  <ul class="collapse">
+  <li><a href="#statistical-analysis" id="toc-statistical-analysis" class="nav-link" data-scroll-target="#statistical-analysis">Statistical Analysis</a></li>
   <li><a href="#close-price-over-time" id="toc-close-price-over-time" class="nav-link" data-scroll-target="#close-price-over-time">Close Price over Time</a></li>
   </ul></li>
-  <li><a href="#news-headlines" id="toc-news-headlines" class="nav-link" data-scroll-target="#news-headlines">News Headlines</a></li>
   <li><a href="#data-preprocessing" id="toc-data-preprocessing" class="nav-link" data-scroll-target="#data-preprocessing">Data Preprocessing</a>
   <ul class="collapse">
   <li><a href="#clean-out-the-nulls" id="toc-clean-out-the-nulls" class="nav-link" data-scroll-target="#clean-out-the-nulls">1. Clean out the nulls</a></li>
@@ -98,6 +104,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#tokenize" id="toc-tokenize" class="nav-link" data-scroll-target="#tokenize">4. Tokenize</a></li>
   </ul></li>
   <li><a href="#first-model" id="toc-first-model" class="nav-link" data-scroll-target="#first-model">First Model</a></li>
+  </ul></li>
   </ul>
 </nav>
 </div>
@@ -128,7 +135,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="cell-1" class="cell" data-execution_count="33">
+<div id="cell-1" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -138,127 +145,172 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> TfidfVectorizer</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> classification_report, accuracy_score</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> Counter</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> nltk</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.corpus <span class="im">import</span> stopwords</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>sns.set_theme(style<span class="op">=</span><span class="st">"whitegrid"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> TfidfVectorizer</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> classification_report, accuracy_score</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>sns.set_theme(style<span class="op">=</span><span class="st">"whitegrid"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<section id="eda-of-the-news-datasets" class="level2">
-<h2 class="anchored" data-anchor-id="eda-of-the-news-datasets">EDA of the News Datasets</h2>
-<div id="cell-3" class="cell" data-execution_count="2">
+<section id="exploratory-data-analysis" class="level1">
+<h1>Exploratory Data Analysis</h1>
+<section id="news-datasets" class="level2">
+<h2 class="anchored" data-anchor-id="news-datasets">News Datasets</h2>
+<p>The three news datasets are obtained through <a href="https://www.kaggle.com/datasets/notlucasp/financial-news-headlines/data">Kaggle</a>. The author mentioned these data are scraped from CNBC, the Guardian, and Reuters official websites, the headlines in these datasets reflects the overview of the U.S. economy and stock market every day for the past year to 2 years.</p>
+<p>The Timeframes of data: * Data scraped from CNBC contains the headlines, last updated date, and the preview text of articles from the end of <code>December 2017</code> to <code>July 19th, 2020</code>. * Data scraped from the Guardian Business contains the headlines and last updated date of articles from the end of <code>December 2017</code> to <code>July 19th, 2020</code> since the Guardian Business does not offer preview text. * Data scraped from Reuters contains the headlines, last updated date, and the preview text of articles from the end of <code>March 2018</code> to <code>July 19th, 2020</code>.</p>
+<div id="cell-5" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>cnbc_data <span class="op">=</span> pd.read_csv(<span class="st">'dataset/cnbc_headlines.csv'</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>guardian_data <span class="op">=</span> pd.read_csv(<span class="st">'dataset/guardian_headlines.csv'</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>reuters_data <span class="op">=</span> pd.read_csv(<span class="st">'dataset/reuters_headlines.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># There is ,, empty lines in CNBC, drop them</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>cnbc_data.dropna(subset<span class="op">=</span>[<span class="st">'Time'</span>],inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>guardian_data <span class="op">=</span> pd.read_csv(<span class="st">'dataset/guardian_headlines.csv'</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>reuters_data <span class="op">=</span> pd.read_csv(<span class="st">'dataset/reuters_headlines.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="cell-4" class="cell" data-execution_count="3">
+<div id="cell-6" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Basic info for all three news headlines datasets</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>cnbc_info <span class="op">=</span> cnbc_data.info()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dfs <span class="op">=</span> [cnbc_data, guardian_data, reuters_data]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df_names <span class="op">=</span> [<span class="st">'CNBC'</span>, <span class="st">'Guardian'</span>, <span class="st">'Reuters'</span>]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>non_null_counts <span class="op">=</span> [df.dropna().shape[<span class="dv">0</span>] <span class="cf">for</span> df <span class="kw">in</span> dfs]</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">5</span>))</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>plt.bar(df_names, non_null_counts)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Number of Non-Null Entries in DataFrames"</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"DataFrames"</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Non-Null Count"</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
-RangeIndex: 3080 entries, 0 to 3079
-Data columns (total 3 columns):
- #   Column       Non-Null Count  Dtype 
----  ------       --------------  ----- 
- 0   Headlines    2800 non-null   object
- 1   Time         2800 non-null   object
- 2   Description  2800 non-null   object
-dtypes: object(3)
-memory usage: 72.3+ KB</code></pre>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="project_files/figure-html/cell-4-output-1.png" class="img-fluid figure-img"></p>
+</figure>
 </div>
-</div>
-<div id="cell-5" class="cell" data-execution_count="4">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>guardian_info <span class="op">=</span> guardian_data.info()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
-RangeIndex: 17800 entries, 0 to 17799
-Data columns (total 2 columns):
- #   Column     Non-Null Count  Dtype 
----  ------     --------------  ----- 
- 0   Time       17800 non-null  object
- 1   Headlines  17800 non-null  object
-dtypes: object(2)
-memory usage: 278.2+ KB</code></pre>
-</div>
-</div>
-<div id="cell-6" class="cell" data-execution_count="5">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>reuters_info <span class="op">=</span> reuters_data.info()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
-RangeIndex: 32770 entries, 0 to 32769
-Data columns (total 3 columns):
- #   Column       Non-Null Count  Dtype 
----  ------       --------------  ----- 
- 0   Headlines    32770 non-null  object
- 1   Time         32770 non-null  object
- 2   Description  32770 non-null  object
-dtypes: object(3)
-memory usage: 768.2+ KB</code></pre>
 </div>
 </div>
 <p>We can see here that all of the news datasets have varying numbers of data points ranging from 2800 to 32700. This will not be a problem for us since our question focuses on the impact of news headlines in general on the S&amp;P 500, so all of this data will be combined in to a larger dataset ordered by the date of the headline. We can also see there is null data within the CNBC dataset which will be removed.</p>
-<div id="cell-8" class="cell" data-execution_count="6">
+<section id="headline-length" class="level3">
+<h3 class="anchored" data-anchor-id="headline-length">Headline Length</h3>
+<div id="cell-9" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>cnbc_missing <span class="op">=</span> cnbc_data.isnull().mean()</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>guardian_missing <span class="op">=</span> guardian_data.isnull().mean()</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>reuters_missing <span class="op">=</span> reuters_data.isnull().mean()</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>cnbc_missing, guardian_missing, reuters_missing</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">18</span>, <span class="dv">6</span>))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># CNBC dataset</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>sns.histplot(cnbc_data[<span class="st">'Headlines'</span>].fillna(<span class="st">""</span>).<span class="bu">apply</span>(<span class="bu">len</span>), bins<span class="op">=</span><span class="dv">30</span>, kde<span class="op">=</span><span class="va">True</span>, ax<span class="op">=</span>ax[<span class="dv">0</span>], color<span class="op">=</span><span class="st">"skyblue"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_title(<span class="st">"CNBC Headline Length Distribution"</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_xlabel(<span class="st">"Headline Length"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_ylabel(<span class="st">"Frequency"</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Guardian dataset</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>sns.histplot(guardian_data[<span class="st">'Headlines'</span>].fillna(<span class="st">""</span>).<span class="bu">apply</span>(<span class="bu">len</span>), bins<span class="op">=</span><span class="dv">30</span>, kde<span class="op">=</span><span class="va">True</span>, ax<span class="op">=</span>ax[<span class="dv">1</span>], color<span class="op">=</span><span class="st">"salmon"</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_title(<span class="st">"Guardian Headline Length Distribution"</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_xlabel(<span class="st">"Headline Length"</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_ylabel(<span class="st">"Frequency"</span>)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Reuters dataset</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>sns.histplot(reuters_data[<span class="st">'Headlines'</span>].fillna(<span class="st">""</span>).<span class="bu">apply</span>(<span class="bu">len</span>), bins<span class="op">=</span><span class="dv">30</span>, kde<span class="op">=</span><span class="va">True</span>, ax<span class="op">=</span>ax[<span class="dv">2</span>], color<span class="op">=</span><span class="st">"lightgreen"</span>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">2</span>].set_title(<span class="st">"Reuters Headline Length Distribution"</span>)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">2</span>].set_xlabel(<span class="st">"Headline Length"</span>)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">2</span>].set_ylabel(<span class="st">"Frequency"</span>)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="6">
-<pre><code>(Headlines      0.090909
- Time           0.090909
- Description    0.090909
- dtype: float64,
- Time         0.0
- Headlines    0.0
- dtype: float64,
- Headlines      0.0
- Time           0.0
- Description    0.0
- dtype: float64)</code></pre>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="project_files/figure-html/cell-5-output-1.png" class="img-fluid figure-img"></p>
+</figure>
 </div>
 </div>
-<div id="cell-9" class="cell" data-execution_count="7">
+</div>
+<p>These histograms display the number of headlines given a specific length. Disregarding the bar at length of 0 in the CNBC graph due to the null data, headlines from all three stations seem to center around 60-70 words with the max being ~100 for CNBC and Reuters, and ~120 for the Guardian.</p>
+</section>
+<section id="headline-distribution" class="level3">
+<h3 class="anchored" data-anchor-id="headline-distribution">Headline Distribution</h3>
+<p>To find out the distribution of headlines throughout the time frame, we generated a graph with headlines colored differently in each month of the year.</p>
+<div id="cell-12" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">18</span>, <span class="dv">6</span>))</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># CNBC dataset</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>sns.histplot(cnbc_data[<span class="st">'Headlines'</span>].fillna(<span class="st">""</span>).<span class="bu">apply</span>(<span class="bu">len</span>), bins<span class="op">=</span><span class="dv">30</span>, kde<span class="op">=</span><span class="va">True</span>, ax<span class="op">=</span>ax[<span class="dv">0</span>], color<span class="op">=</span><span class="st">"skyblue"</span>)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_title(<span class="st">"CNBC Headline Length Distribution"</span>)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_xlabel(<span class="st">"Headline Length"</span>)</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_ylabel(<span class="st">"Frequency"</span>)</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Guardian dataset</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>sns.histplot(guardian_data[<span class="st">'Headlines'</span>].fillna(<span class="st">""</span>).<span class="bu">apply</span>(<span class="bu">len</span>), bins<span class="op">=</span><span class="dv">30</span>, kde<span class="op">=</span><span class="va">True</span>, ax<span class="op">=</span>ax[<span class="dv">1</span>], color<span class="op">=</span><span class="st">"salmon"</span>)</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_title(<span class="st">"Guardian Headline Length Distribution"</span>)</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_xlabel(<span class="st">"Headline Length"</span>)</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_ylabel(<span class="st">"Frequency"</span>)</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Reuters dataset</span></span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>sns.histplot(reuters_data[<span class="st">'Headlines'</span>].fillna(<span class="st">""</span>).<span class="bu">apply</span>(<span class="bu">len</span>), bins<span class="op">=</span><span class="dv">30</span>, kde<span class="op">=</span><span class="va">True</span>, ax<span class="op">=</span>ax[<span class="dv">2</span>], color<span class="op">=</span><span class="st">"lightgreen"</span>)</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">2</span>].set_title(<span class="st">"Reuters Headline Length Distribution"</span>)</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">2</span>].set_xlabel(<span class="st">"Headline Length"</span>)</span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">2</span>].set_ylabel(<span class="st">"Frequency"</span>)</span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extra cleaning for CNBC</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>cnbc_data[<span class="st">'Time'</span>] <span class="op">=</span> (</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    cnbc_data[<span class="st">'Time'</span>]</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">str</span>.replace(<span class="vs">r"ET"</span>, <span class="st">""</span>, regex<span class="op">=</span><span class="va">True</span>)  </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">str</span>.strip() </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">str</span>.replace(<span class="vs">r"\s+"</span>, <span class="st">" "</span>, regex<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="cell-13" class="cell" data-execution_count="6">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>cnbc_data[<span class="st">'Time'</span>] <span class="op">=</span> pd.to_datetime(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    cnbc_data[<span class="st">'Time'</span>], <span class="bu">format</span><span class="op">=</span><span class="st">"mixed"</span>, errors<span class="op">=</span><span class="st">'coerce'</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># For GUARDIAN</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>guardian_data[<span class="st">'Time'</span>] <span class="op">=</span> pd.to_datetime(</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    guardian_data[<span class="st">'Time'</span>], <span class="bu">format</span><span class="op">=</span><span class="st">'</span><span class="sc">%d</span><span class="st">-%b-%y'</span>, errors<span class="op">=</span><span class="st">'coerce'</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co"># For REUTERS</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>reuters_data[<span class="st">'Time'</span>] <span class="op">=</span> pd.to_datetime(</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    reuters_data[<span class="st">'Time'</span>], <span class="bu">format</span><span class="op">=</span><span class="st">'%b </span><span class="sc">%d</span><span class="st"> %Y'</span>, errors<span class="op">=</span><span class="st">'coerce'</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Adding additional columns for time analysis</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> df <span class="kw">in</span> [cnbc_data, guardian_data, reuters_data]:</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Extract date parts for time-based analysis</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'Year'</span>] <span class="op">=</span> df[<span class="st">'Time'</span>].dt.year</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'Month'</span>] <span class="op">=</span> df[<span class="st">'Time'</span>].dt.month</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Frequency of headlines by year and month for each dataset</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>cnbc_yearly_counts <span class="op">=</span> cnbc_data.groupby([<span class="st">'Year'</span>, <span class="st">'Month'</span>]).size().unstack(fill_value<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>guardian_yearly_counts <span class="op">=</span> guardian_data.groupby([<span class="st">'Year'</span>, <span class="st">'Month'</span>]).size().unstack(fill_value<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>reuters_yearly_counts <span class="op">=</span> reuters_data.groupby([<span class="st">'Year'</span>, <span class="st">'Month'</span>]).size().unstack(fill_value<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="cell-14" class="cell" data-execution_count="7">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">3</span>, <span class="dv">1</span>, figsize<span class="op">=</span>(<span class="dv">14</span>, <span class="dv">12</span>), sharex<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Set a colormap to represent months consistently</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>month_colors <span class="op">=</span> plt.colormaps[<span class="st">"tab20"</span>]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># CNBC dataset with month colors</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>cnbc_yearly_counts.plot(kind<span class="op">=</span><span class="st">"bar"</span>, stacked<span class="op">=</span><span class="va">True</span>, ax<span class="op">=</span>ax[<span class="dv">0</span>], color<span class="op">=</span>[month_colors(i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">12</span>)], legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_title(<span class="st">"CNBC Headlines Frequency by Year and Month"</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_ylabel(<span class="st">"Number of Headlines"</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Guardian dataset with month colors</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>guardian_yearly_counts.plot(kind<span class="op">=</span><span class="st">"bar"</span>, stacked<span class="op">=</span><span class="va">True</span>, ax<span class="op">=</span>ax[<span class="dv">1</span>], color<span class="op">=</span>[month_colors(i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">12</span>)], legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_title(<span class="st">"Guardian Headlines Frequency by Year and Month"</span>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_ylabel(<span class="st">"Number of Headlines"</span>)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Reuters dataset with month colors</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>reuters_yearly_counts.plot(kind<span class="op">=</span><span class="st">"bar"</span>, stacked<span class="op">=</span><span class="va">True</span>, ax<span class="op">=</span>ax[<span class="dv">2</span>], color<span class="op">=</span>[month_colors(i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">12</span>)], legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">2</span>].set_title(<span class="st">"Reuters Headlines Frequency by Year and Month"</span>)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">2</span>].set_ylabel(<span class="st">"Number of Headlines"</span>)</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">2</span>].set_xlabel(<span class="st">"Year"</span>)</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Adding a single legend for the months</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>month_names <span class="op">=</span> [calendar.month_name[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">13</span>)]</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>fig.legend(month_names, loc<span class="op">=</span><span class="st">"upper right"</span>, title<span class="op">=</span><span class="st">"Months"</span>)</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>plt.tight_layout(rect<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">0</span>, <span class="fl">0.85</span>, <span class="dv">1</span>])  <span class="co"># Adjust layout to fit the legend</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
@@ -268,107 +320,113 @@ memory usage: 768.2+ KB</code></pre>
 </div>
 </div>
 </div>
-<p>These histograms display the number of headlines given a specific length. Disregarding the bar at length of 0 in the CNBC graph due to the null data, headlines from all three stations seem to center around 60-70 words with the max being ~100 for CNBC and Reuters, and ~120 for the Guardian.</p>
-<div id="cell-11" class="cell" data-execution_count="8">
+<p>These graphs depict the number of headlines per month per year. With this, we can see that the earlier months of the year seem to have a higher concentration of headlines.</p>
+<div id="cell-16" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>cnbc_data[<span class="st">'Time'</span>] <span class="op">=</span> (</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    cnbc_data[<span class="st">'Time'</span>]</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">str</span>.replace(<span class="vs">r"ET"</span>, <span class="st">""</span>, regex<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">str</span>.strip()  </span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert the 'Time' columns to datetime format for each dataset</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>cnbc_data[<span class="st">'Time'</span>] <span class="op">=</span> pd.to_datetime(cnbc_data[<span class="st">'Time'</span>], errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>guardian_data[<span class="st">'Time'</span>] <span class="op">=</span> pd.to_datetime(guardian_data[<span class="st">'Time'</span>], errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>reuters_data[<span class="st">'Time'</span>] <span class="op">=</span> pd.to_datetime(reuters_data[<span class="st">'Time'</span>], errors<span class="op">=</span><span class="st">'coerce'</span>)</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Adding additional columns for time analysis</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> df <span class="kw">in</span> [cnbc_data, guardian_data, reuters_data]:</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Extract date parts for time-based analysis</span></span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'Year'</span>] <span class="op">=</span> df[<span class="st">'Time'</span>].dt.year</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'Month'</span>] <span class="op">=</span> df[<span class="st">'Time'</span>].dt.month</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Frequency of headlines by year and month for each dataset</span></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>cnbc_yearly_counts <span class="op">=</span> cnbc_data.groupby([<span class="st">'Year'</span>, <span class="st">'Month'</span>]).size().unstack(fill_value<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>guardian_yearly_counts <span class="op">=</span> guardian_data.groupby([<span class="st">'Year'</span>, <span class="st">'Month'</span>]).size().unstack(fill_value<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>reuters_yearly_counts <span class="op">=</span> reuters_data.groupby([<span class="st">'Year'</span>, <span class="st">'Month'</span>]).size().unstack(fill_value<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> df <span class="kw">in</span> [cnbc_data, guardian_data, reuters_data]:</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    df.drop(columns<span class="op">=</span>[<span class="st">'Year'</span>,<span class="st">'Month'</span>],inplace<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="word-frequency" class="level3">
+<h3 class="anchored" data-anchor-id="word-frequency">Word Frequency</h3>
+<p>A short analysis on word frequency. We used the stopword dictionary in <code>nltk</code> to help filtering out words like <code>a</code> and <code>the</code>.</p>
+<div id="cell-19" class="cell" data-execution_count="9">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>nltk.download(<span class="st">'stopwords'</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>stop_words <span class="op">=</span> <span class="bu">set</span>(stopwords.words(<span class="st">'english'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
-<pre><code>/var/folders/2f/pp48ygln7m9cxl6lrzd_n_t40000gn/T/ipykernel_44103/3364551870.py:8: UserWarning: Could not infer format, so each element will be parsed individually, falling back to `dateutil`. To ensure parsing is consistent and as-expected, please specify a format.
-  cnbc_data['Time'] = pd.to_datetime(cnbc_data['Time'], errors='coerce')
-/var/folders/2f/pp48ygln7m9cxl6lrzd_n_t40000gn/T/ipykernel_44103/3364551870.py:9: UserWarning: Could not infer format, so each element will be parsed individually, falling back to `dateutil`. To ensure parsing is consistent and as-expected, please specify a format.
-  guardian_data['Time'] = pd.to_datetime(guardian_data['Time'], errors='coerce')</code></pre>
+<pre><code>[nltk_data] Downloading package stopwords to
+[nltk_data]     C:\Users\Aaron\AppData\Roaming\nltk_data...
+[nltk_data]   Package stopwords is already up-to-date!</code></pre>
 </div>
 </div>
-<div id="cell-12" class="cell" data-execution_count="9">
+<div id="cell-20" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">3</span>, <span class="dv">1</span>, figsize<span class="op">=</span>(<span class="dv">14</span>, <span class="dv">12</span>), sharex<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Set a colormap to represent months consistently</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>month_colors <span class="op">=</span> plt.colormaps[<span class="st">"tab20"</span>]</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># CNBC dataset with month colors</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>cnbc_yearly_counts.plot(kind<span class="op">=</span><span class="st">"bar"</span>, stacked<span class="op">=</span><span class="va">True</span>, ax<span class="op">=</span>ax[<span class="dv">0</span>], color<span class="op">=</span>[month_colors(i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">12</span>)], legend<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_title(<span class="st">"CNBC Headlines Frequency by Year and Month"</span>)</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_ylabel(<span class="st">"Number of Headlines"</span>)</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Guardian dataset with month colors</span></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>guardian_yearly_counts.plot(kind<span class="op">=</span><span class="st">"bar"</span>, stacked<span class="op">=</span><span class="va">True</span>, ax<span class="op">=</span>ax[<span class="dv">1</span>], color<span class="op">=</span>[month_colors(i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">12</span>)], legend<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_title(<span class="st">"Guardian Headlines Frequency by Year and Month"</span>)</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_ylabel(<span class="st">"Number of Headlines"</span>)</span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Reuters dataset with month colors</span></span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>reuters_yearly_counts.plot(kind<span class="op">=</span><span class="st">"bar"</span>, stacked<span class="op">=</span><span class="va">True</span>, ax<span class="op">=</span>ax[<span class="dv">2</span>], color<span class="op">=</span>[month_colors(i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">12</span>)], legend<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">2</span>].set_title(<span class="st">"Reuters Headlines Frequency by Year and Month"</span>)</span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">2</span>].set_ylabel(<span class="st">"Number of Headlines"</span>)</span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">2</span>].set_xlabel(<span class="st">"Year"</span>)</span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Adding a single legend for the months</span></span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>month_names <span class="op">=</span> [calendar.month_name[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">13</span>)]</span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>fig.legend(month_names, loc<span class="op">=</span><span class="st">"upper right"</span>, title<span class="op">=</span><span class="st">"Months"</span>)</span>
-<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>plt.tight_layout(rect<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">0</span>, <span class="fl">0.85</span>, <span class="dv">1</span>])  <span class="co"># Adjust layout to fit the legend</span></span>
-<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to clean and process headlines for meaningful word frequencies</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_and_plot(data, title, start<span class="op">=</span><span class="dv">0</span>, end<span class="op">=</span><span class="dv">15</span>, stopwords<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    stopwords <span class="op">=</span> stop_words</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    combined_string <span class="op">=</span> <span class="st">' '</span>.join(data[<span class="st">'Headlines'</span>])  <span class="co"># Combine all headlines</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    word_list <span class="op">=</span> combined_string.split()  <span class="co"># Split into words</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    word_list <span class="op">=</span> [word.lower().strip(<span class="st">",.!?()[]"</span>) <span class="cf">for</span> word <span class="kw">in</span> word_list <span class="cf">if</span> word.lower() <span class="kw">not</span> <span class="kw">in</span> stopwords]</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate word frequencies</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    word_count <span class="op">=</span> Counter(word_list)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Sort words by frequency</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    sorted_words <span class="op">=</span> word_count.most_common()  <span class="co"># Sort by frequency</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    top_words <span class="op">=</span> sorted_words[start:end]  <span class="co"># Select words from the specified range</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create lists of words and their counts</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    words <span class="op">=</span> [word <span class="cf">for</span> word, count <span class="kw">in</span> top_words]</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    counts <span class="op">=</span> [count <span class="cf">for</span> word, count <span class="kw">in</span> top_words]</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plot the bar chart</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">4</span>))</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    sns.barplot(x<span class="op">=</span>counts, y<span class="op">=</span>words,hue<span class="op">=</span>words, palette<span class="op">=</span><span class="st">"Blues_d"</span>, orient<span class="op">=</span><span class="st">"h"</span>)</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Counts'</span>)</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Words'</span>)</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>    plt.title(title)</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>    plt.tight_layout()</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot for each dataset excluding common stopwords</span></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>process_and_plot(guardian_data, <span class="st">'Guardian: Top 15 Meaningful Words Frequency'</span>)</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>process_and_plot(cnbc_data, <span class="st">'CNBC: Top 15 Meaningful Words Frequency'</span>)</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>process_and_plot(reuters_data, <span class="st">'Reuters: Top 15 Meaningful Words'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="project_files/figure-html/cell-10-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="project_files/figure-html/cell-11-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="project_files/figure-html/cell-11-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="project_files/figure-html/cell-11-output-3.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>These graphs depict the number of headlines per month per year. With this, we can see that the earlier months of the year seem to have a higher concentration of headlines.</p>
-<div id="cell-14" class="cell" data-execution_count="10">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove extra data columns</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> df <span class="kw">in</span> [cnbc_data, guardian_data, reuters_data]:</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    df.drop(columns<span class="op">=</span>[<span class="st">'Year'</span>,<span class="st">'Month'</span>],inplace<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
+<p>Most of the words are meaningful, but who is <code>cramer</code> in the CNBC dataset? Turns out <a href="https://en.wikipedia.org/wiki/Jim_Cramer">Jim Cramer</a> is the host of various financial programs in CNBC. We will prune him out from the CNBC dataset later.</p>
 </section>
-<section id="stock-price-of-the-sp-500" class="level2">
-<h2 class="anchored" data-anchor-id="stock-price-of-the-sp-500">Stock Price of the S&amp;P 500</h2>
-<div id="cell-16" class="cell" data-execution_count="11">
+</section>
+<section id="sp-500-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="sp-500-dataset">S&amp;P 500 Dataset</h2>
+<div id="cell-23" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>ticker <span class="op">=</span> <span class="st">"^GSPC"</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>start_date <span class="op">=</span> <span class="st">"2017-12-01"</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>end_date <span class="op">=</span> <span class="st">"2020-07-31"</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> yf.download(ticker, start<span class="op">=</span>start_date, end<span class="op">=</span>end_date, interval<span class="op">=</span><span class="st">"1d"</span>)</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>data_hlcv <span class="op">=</span> data[[<span class="st">'High'</span>, <span class="st">'Low'</span>, <span class="st">'Close'</span>, <span class="st">'Volume'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ticker <span class="op">=</span> <span class="st">"^GSPC"</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>start_date <span class="op">=</span> <span class="st">"2017-12-01"</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>end_date <span class="op">=</span> <span class="st">"2020-07-31"</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> yf.download(ticker, start<span class="op">=</span>start_date, end<span class="op">=</span>end_date, interval<span class="op">=</span><span class="st">"1d"</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>data_hlcv <span class="op">=</span> data[[<span class="st">'High'</span>, <span class="st">'Low'</span>, <span class="st">'Close'</span>, <span class="st">'Volume'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
-<pre><code>[*********************100%***********************]  1 of 1 completed</code></pre>
+<pre><code>[*********************100%%**********************]  1 of 1 completed</code></pre>
 </div>
 </div>
-<div id="cell-17" class="cell" data-execution_count="12">
+<section id="statistical-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis">Statistical Analysis</h3>
+<div id="cell-25" class="cell" data-execution_count="12">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>data_hlcv.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>data_hlcv.describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="12">
 <div>
@@ -377,95 +435,11 @@ memory usage: 768.2+ KB</code></pre>
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th">Price</th>
+<th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">High</th>
 <th data-quarto-table-cell-role="th">Low</th>
 <th data-quarto-table-cell-role="th">Close</th>
 <th data-quarto-table-cell-role="th">Volume</th>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">Ticker</th>
-<th data-quarto-table-cell-role="th">^GSPC</th>
-<th data-quarto-table-cell-role="th">^GSPC</th>
-<th data-quarto-table-cell-role="th">^GSPC</th>
-<th data-quarto-table-cell-role="th">^GSPC</th>
-</tr>
-<tr class="header">
-<th data-quarto-table-cell-role="th">Date</th>
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th"></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2017-12-01 00:00:00+00:00</td>
-<td>2650.620117</td>
-<td>2605.520020</td>
-<td>2642.219971</td>
-<td>3950930000</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">2017-12-04 00:00:00+00:00</td>
-<td>2665.189941</td>
-<td>2639.030029</td>
-<td>2639.439941</td>
-<td>4025840000</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2017-12-05 00:00:00+00:00</td>
-<td>2648.719971</td>
-<td>2627.729980</td>
-<td>2629.570068</td>
-<td>3547570000</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">2017-12-06 00:00:00+00:00</td>
-<td>2634.409912</td>
-<td>2624.750000</td>
-<td>2629.270020</td>
-<td>3253080000</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2017-12-07 00:00:00+00:00</td>
-<td>2640.989990</td>
-<td>2626.530029</td>
-<td>2636.979980</td>
-<td>3297060000</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-<section id="data-exploration" class="level3">
-<h3 class="anchored" data-anchor-id="data-exploration">Data Exploration</h3>
-<div id="cell-19" class="cell" data-execution_count="13">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>data_hlcv.describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-display" data-execution_count="13">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th">Price</th>
-<th data-quarto-table-cell-role="th">High</th>
-<th data-quarto-table-cell-role="th">Low</th>
-<th data-quarto-table-cell-role="th">Close</th>
-<th data-quarto-table-cell-role="th">Volume</th>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">Ticker</th>
-<th data-quarto-table-cell-role="th">^GSPC</th>
-<th data-quarto-table-cell-role="th">^GSPC</th>
-<th data-quarto-table-cell-role="th">^GSPC</th>
-<th data-quarto-table-cell-role="th">^GSPC</th>
 </tr>
 </thead>
 <tbody>
@@ -531,43 +505,26 @@ memory usage: 768.2+ KB</code></pre>
 </div>
 </div>
 </div>
-<div id="cell-20" class="cell" data-execution_count="14">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>missing_values <span class="op">=</span> data_hlcv.isnull().<span class="bu">sum</span>()</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Missing values in each column:"</span>)</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(missing_values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>Missing values in each column:
-Price   Ticker
-High    ^GSPC     0
-Low     ^GSPC     0
-Close   ^GSPC     0
-Volume  ^GSPC     0
-dtype: int64</code></pre>
-</div>
-</div>
 <p>The S&amp;P 500 dataset from December 1, 2017, to July 31, 2020, contains <strong>669</strong> daily records with columns for <code>High</code>, <code>Low</code>, <code>Close</code>, and <code>Volume</code>, with <strong>no missing values</strong>. The average ‘High’, ‘Low’, and ‘Close’ prices are around 2883, 2849, and 2867, respectively, with standard deviations near 200 points, indicating moderate volatility. The ‘Volume’ data, averaging 3.97 billion shares, shows considerable variability, ranging from 1.3 billion to 9.05 billion, reflecting spikes in trading activity during certain market events.</p>
 <p>To prepare for analysis, normalization or standardization may be beneficial to handle the scale differences, particularly between price and volume data. This initial overview confirms a relatively stable daily distribution, setting up further analysis on trends, volatility, and potential event impacts on S&amp;P 500 performance.</p>
 </section>
 <section id="close-price-over-time" class="level3">
 <h3 class="anchored" data-anchor-id="close-price-over-time">Close Price over Time</h3>
-<div id="cell-23" class="cell" data-execution_count="15">
+<div id="cell-28" class="cell" data-execution_count="13">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>sns.lineplot(x<span class="op">=</span>data_hlcv.index, y<span class="op">=</span>data_hlcv[<span class="st">'Close'</span>].squeeze(), color<span class="op">=</span><span class="st">"#4c72b0"</span>, label<span class="op">=</span><span class="st">"Close Price"</span>)</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"S&amp;P 500 Closing Price Over Time"</span>)</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Date"</span>)</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Closing Price (USD)"</span>)</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>sns.lineplot(x<span class="op">=</span>data_hlcv.index, y<span class="op">=</span>data_hlcv[<span class="st">'Close'</span>].squeeze(), color<span class="op">=</span><span class="st">"#4c72b0"</span>, label<span class="op">=</span><span class="st">"Close Price"</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"S&amp;P 500 Closing Price Over Time"</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Date"</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Closing Price (USD)"</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="project_files/figure-html/cell-16-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="project_files/figure-html/cell-14-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -575,177 +532,38 @@ dtype: int64</code></pre>
 <p>This is the stock price of the S&amp;P 500 over min and max dates covered by the news headlines. Some noticeable features that are included in this graph is the large dip during early 2020 caused by covid. This will have an interesting impact on our model since the news did play a big role in the scare factor for COVID-19, but the fact that it was caused by a global epidemic may skew the embeddings of other words.</p>
 </section>
 </section>
-<section id="news-headlines" class="level2">
-<h2 class="anchored" data-anchor-id="news-headlines">News Headlines</h2>
-<div id="cell-26" class="cell" data-execution_count="16">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>df_gurdian <span class="op">=</span> pd.read_csv(<span class="st">'dataset/guardian_headlines.csv'</span>)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>df_gurdian.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-display" data-execution_count="16">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Time</th>
-<th data-quarto-table-cell-role="th">Headlines</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>18-Jul-20</td>
-<td>Johnson is asking Santa for a Christmas recovery</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>18-Jul-20</td>
-<td>‘I now fear the worst’: four grim tales of wor...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>18-Jul-20</td>
-<td>Five key areas Sunak must tackle to serve up e...</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>18-Jul-20</td>
-<td>Covid-19 leaves firms ‘fatally ill-prepared’ f...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>18-Jul-20</td>
-<td>The Week in Patriarchy \n\n\n Bacardi's 'lad...</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-<div id="cell-27" class="cell" data-execution_count="17">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Create the word count dictionary</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>gurdian_string <span class="op">=</span> <span class="st">' '</span>.join(guardian_data[<span class="st">'Headlines'</span>])  <span class="co"># Combine all headlines into one string</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>gurdian_string_list <span class="op">=</span> gurdian_string.split(<span class="st">' '</span>)  <span class="co"># Split the string into words</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>gurdian_count <span class="op">=</span> {}</span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> word <span class="kw">in</span> gurdian_string_list:</span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> word <span class="kw">in</span> gurdian_count:</span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>        gurdian_count[word] <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>        gurdian_count[word] <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: Sort words by frequency and get the top 20 words</span></span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>sorted_words <span class="op">=</span> <span class="bu">sorted</span>(gurdian_count.items(), key<span class="op">=</span><span class="kw">lambda</span> item: item[<span class="dv">1</span>], reverse<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>top_words <span class="op">=</span> sorted_words[<span class="dv">100</span>:<span class="dv">120</span>]  <span class="co"># Select words from the 100th to the 120th most frequent</span></span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Create lists of words and their counts</span></span>
-<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>words <span class="op">=</span> [word <span class="cf">for</span> word, count <span class="kw">in</span> top_words]</span>
-<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>counts <span class="op">=</span> [count <span class="cf">for</span> word, count <span class="kw">in</span> top_words]</span>
-<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 4: Plot the bar chart</span></span>
-<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
-<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>sns.barplot(x<span class="op">=</span>words, y<span class="op">=</span>counts, palette<span class="op">=</span><span class="st">"Blues_d"</span>)  <span class="co"># Remove 'hue' argument</span></span>
-<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Words'</span>)</span>
-<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Counts'</span>)</span>
-<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Top 20 Words Frequency'</span>)</span>
-<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>plt.xticks(rotation<span class="op">=</span><span class="dv">45</span>)</span>
-<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>/var/folders/2f/pp48ygln7m9cxl6lrzd_n_t40000gn/T/ipykernel_44103/3014567614.py:26: FutureWarning: 
-
-Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x` variable to `hue` and set `legend=False` for the same effect.
-
-  sns.barplot(x=words, y=counts, palette="Blues_d")  # Remove 'hue' argument</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="project_files/figure-html/cell-18-output-2.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>This histogram captures a range of words and graphs them by the number of occurrences each one has. Currently words 100-120 are being displayed since many of the top words are meaningless words like articles, prepositions, pronouns, etc. The current graph has a few notable words like fears, energy, government, China, and shares.</p>
-<div id="cell-29" class="cell" data-execution_count="18">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>filtered_words <span class="op">=</span> {word: count <span class="cf">for</span> word, count <span class="kw">in</span> gurdian_count.items() <span class="cf">if</span> <span class="bu">any</span>(c.isupper() <span class="cf">for</span> c <span class="kw">in</span> word)}</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>top_words <span class="op">=</span> <span class="bu">sorted</span>(filtered_words.items(), key<span class="op">=</span><span class="kw">lambda</span> item: item[<span class="dv">1</span>], reverse<span class="op">=</span><span class="va">True</span>)[:<span class="dv">10</span>]</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Extracting words and counts</span></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>words <span class="op">=</span> [item[<span class="dv">0</span>] <span class="cf">for</span> item <span class="kw">in</span> top_words]</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>counts <span class="op">=</span> [item[<span class="dv">1</span>] <span class="cf">for</span> item <span class="kw">in</span> top_words]</span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>sns.barplot(x<span class="op">=</span>words, y<span class="op">=</span>counts, palette<span class="op">=</span><span class="st">"Blues_d"</span>)  <span class="co"># Simple barplot without hue</span></span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Words'</span>)</span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Counts'</span>)</span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Top 10 Capitalized Words Frequency'</span>)</span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>plt.xticks(rotation<span class="op">=</span><span class="dv">45</span>)</span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>/var/folders/2f/pp48ygln7m9cxl6lrzd_n_t40000gn/T/ipykernel_44103/2496366710.py:9: FutureWarning: 
-
-Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x` variable to `hue` and set `legend=False` for the same effect.
-
-  sns.barplot(x=words, y=counts, palette="Blues_d")  # Simple barplot without hue</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="project_files/figure-html/cell-19-output-2.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>This graph is a more filtered version of the previous graph and only displays the top 10 words that start with a capital letter. This aims to get to most popular proper nouns that news headlines contain.</p>
-</section>
 <section id="data-preprocessing" class="level2">
 <h2 class="anchored" data-anchor-id="data-preprocessing">Data Preprocessing</h2>
 <section id="clean-out-the-nulls" class="level3">
 <h3 class="anchored" data-anchor-id="clean-out-the-nulls">1. Clean out the nulls</h3>
-<div id="cell-33" class="cell" data-execution_count="19">
+<div id="cell-32" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>cnbc_cleaned <span class="op">=</span> cnbc_data.dropna()</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Original shape:"</span>, cnbc_data.shape)</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Cleaned shape:"</span>, cnbc_cleaned.shape)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>cnbc_cleaned <span class="op">=</span> cnbc_data.dropna()</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Original shape:"</span>, cnbc_data.shape)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Cleaned shape:"</span>, cnbc_cleaned.shape)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Original shape: (3080, 3)
 Cleaned shape: (2800, 3)</code></pre>
 </div>
 </div>
-<div id="cell-34" class="cell" data-execution_count="20">
+<div id="cell-33" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop rows with null values</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>guardian_cleaned <span class="op">=</span> guardian_data.dropna()</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert 'Time' column to datetime, setting invalid dates to NaT</span></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>guardian_cleaned[<span class="st">'Time'</span>] <span class="op">=</span> pd.to_datetime(guardian_cleaned[<span class="st">'Time'</span>], errors<span class="op">=</span><span class="st">'coerce'</span>).dt.date</span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the rows with NaT (invalid dates)</span></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>invalid_dates <span class="op">=</span> guardian_cleaned[guardian_cleaned[<span class="st">'Time'</span>].isna()]</span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>guardian_cleaned.dropna(subset<span class="op">=</span>[<span class="st">'Time'</span>], inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Original shape:"</span>, guardian_data.shape)</span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Cleaned shape:"</span>, guardian_cleaned.shape)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop rows with null values</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>guardian_cleaned <span class="op">=</span> guardian_data.dropna()</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert 'Time' column to datetime, setting invalid dates to NaT</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>guardian_cleaned[<span class="st">'Time'</span>] <span class="op">=</span> pd.to_datetime(guardian_cleaned[<span class="st">'Time'</span>], errors<span class="op">=</span><span class="st">'coerce'</span>).dt.date</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the rows with NaT (invalid dates)</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>invalid_dates <span class="op">=</span> guardian_cleaned[guardian_cleaned[<span class="st">'Time'</span>].isna()]</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>guardian_cleaned.dropna(subset<span class="op">=</span>[<span class="st">'Time'</span>], inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Original shape:"</span>, guardian_data.shape)</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Cleaned shape:"</span>, guardian_cleaned.shape)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Original shape: (17800, 2)
@@ -768,15 +586,15 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
 </section>
 <section id="removing-extraneous-columns" class="level3">
 <h3 class="anchored" data-anchor-id="removing-extraneous-columns">2. Removing extraneous columns</h3>
-<div id="cell-36" class="cell" data-execution_count="21">
+<div id="cell-35" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>cnbc_data_cleaned <span class="op">=</span> cnbc_cleaned.drop(columns<span class="op">=</span>[<span class="st">'Description'</span>], errors<span class="op">=</span><span class="st">'ignore'</span>)</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>reuters_cleaned <span class="op">=</span> reuters_data.drop(columns<span class="op">=</span>[<span class="st">'Description'</span>], errors<span class="op">=</span><span class="st">'ignore'</span>)</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"CNBC dataset columns after cleaning:"</span>, cnbc_data_cleaned.columns)</span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Reuters dataset columns after cleaning:"</span>, reuters_cleaned.columns)</span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Guardian dataset columns after cleaning:"</span>, guardian_data.columns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>cnbc_data_cleaned <span class="op">=</span> cnbc_cleaned.drop(columns<span class="op">=</span>[<span class="st">'Description'</span>], errors<span class="op">=</span><span class="st">'ignore'</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>reuters_cleaned <span class="op">=</span> reuters_data.drop(columns<span class="op">=</span>[<span class="st">'Description'</span>], errors<span class="op">=</span><span class="st">'ignore'</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"CNBC dataset columns after cleaning:"</span>, cnbc_data_cleaned.columns)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Reuters dataset columns after cleaning:"</span>, reuters_cleaned.columns)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Guardian dataset columns after cleaning:"</span>, guardian_data.columns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>CNBC dataset columns after cleaning: Index(['Headlines', 'Time'], dtype='object')
@@ -787,17 +605,17 @@ Guardian dataset columns after cleaning: Index(['Time', 'Headlines'], dtype='obj
 </section>
 <section id="combine-the-three-news-dataset-with-stock-data" class="level3">
 <h3 class="anchored" data-anchor-id="combine-the-three-news-dataset-with-stock-data">3. Combine the three news dataset with stock data</h3>
-<div id="cell-38" class="cell" data-execution_count="22">
+<div id="cell-37" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>stock_data <span class="op">=</span> data_hlcv.reset_index()[[<span class="st">'Date'</span>, <span class="st">'Close'</span>]]</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Flatten the column headers if they are multi-level</span></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>stock_data.columns <span class="op">=</span> stock_data.columns.<span class="bu">map</span>(<span class="kw">lambda</span> x: x[<span class="dv">1</span>] <span class="cf">if</span> <span class="bu">isinstance</span>(x, <span class="bu">tuple</span>) <span class="cf">else</span> x)</span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>stock_data.rename(columns<span class="op">=</span>{stock_data.columns[<span class="dv">0</span>]: <span class="st">'Date'</span>, stock_data.columns[<span class="dv">1</span>]: <span class="st">'Close'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>stock_data[<span class="st">'trend_up'</span>] <span class="op">=</span> stock_data[<span class="st">'Close'</span>].shift(<span class="op">-</span><span class="dv">1</span>) <span class="op">&gt;</span> stock_data[<span class="st">'Close'</span>]</span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>stock_data.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>stock_data <span class="op">=</span> data_hlcv.reset_index()[[<span class="st">'Date'</span>, <span class="st">'Close'</span>]]</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Flatten the column headers if they are multi-level</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>stock_data.columns <span class="op">=</span> stock_data.columns.<span class="bu">map</span>(<span class="kw">lambda</span> x: x[<span class="dv">1</span>] <span class="cf">if</span> <span class="bu">isinstance</span>(x, <span class="bu">tuple</span>) <span class="cf">else</span> x)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>stock_data.rename(columns<span class="op">=</span>{stock_data.columns[<span class="dv">0</span>]: <span class="st">'Date'</span>, stock_data.columns[<span class="dv">1</span>]: <span class="st">'Close'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>stock_data[<span class="st">'trend_up'</span>] <span class="op">=</span> stock_data[<span class="st">'Close'</span>].shift(<span class="op">-</span><span class="dv">1</span>) <span class="op">&gt;</span> stock_data[<span class="st">'Close'</span>]</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>stock_data.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="22">
 <div>
@@ -849,18 +667,18 @@ Guardian dataset columns after cleaning: Index(['Time', 'Headlines'], dtype='obj
 </div>
 </div>
 </div>
-<div id="cell-39" class="cell" data-execution_count="23">
+<div id="cell-38" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>cnbc_data_cleaned[<span class="st">'Date'</span>] <span class="op">=</span> pd.to_datetime(cnbc_data_cleaned[<span class="st">'Time'</span>]).dt.date</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>guardian_cleaned[<span class="st">'Date'</span>] <span class="op">=</span> pd.to_datetime(guardian_cleaned[<span class="st">'Time'</span>]).dt.date</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>reuters_cleaned[<span class="st">'Date'</span>] <span class="op">=</span> pd.to_datetime(reuters_cleaned[<span class="st">'Time'</span>]).dt.date</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>cnbc_data_cleaned.drop(columns<span class="op">=</span>[<span class="st">'Time'</span>],inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>guardian_cleaned.drop(columns<span class="op">=</span>[<span class="st">'Time'</span>],inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>reuters_cleaned.drop(columns<span class="op">=</span>[<span class="st">'Time'</span>],inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>stock_data[<span class="st">'Date'</span>] <span class="op">=</span> pd.to_datetime(stock_data[<span class="st">'Date'</span>]).dt.date</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>cnbc_data_cleaned[<span class="st">'Date'</span>] <span class="op">=</span> pd.to_datetime(cnbc_data_cleaned[<span class="st">'Time'</span>]).dt.date</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>guardian_cleaned[<span class="st">'Date'</span>] <span class="op">=</span> pd.to_datetime(guardian_cleaned[<span class="st">'Time'</span>]).dt.date</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>reuters_cleaned[<span class="st">'Date'</span>] <span class="op">=</span> pd.to_datetime(reuters_cleaned[<span class="st">'Time'</span>]).dt.date</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>cnbc_data_cleaned.drop(columns<span class="op">=</span>[<span class="st">'Time'</span>],inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>guardian_cleaned.drop(columns<span class="op">=</span>[<span class="st">'Time'</span>],inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>reuters_cleaned.drop(columns<span class="op">=</span>[<span class="st">'Time'</span>],inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>stock_data[<span class="st">'Date'</span>] <span class="op">=</span> pd.to_datetime(stock_data[<span class="st">'Date'</span>]).dt.date</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>/var/folders/2f/pp48ygln7m9cxl6lrzd_n_t40000gn/T/ipykernel_44103/3131110233.py:2: SettingWithCopyWarning: 
@@ -876,10 +694,10 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
   guardian_cleaned.drop(columns=['Time'],inplace=True)</code></pre>
 </div>
 </div>
-<div id="cell-40" class="cell" data-execution_count="24">
+<div id="cell-39" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>cnbc_data_cleaned.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>cnbc_data_cleaned.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="24">
 <div>
@@ -925,26 +743,26 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
 </div>
 </div>
 </div>
-<div id="cell-41" class="cell" data-execution_count="25">
+<div id="cell-40" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Concatenate datasets with stock data</span></span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>cnbc_merged <span class="op">=</span> pd.merge(cnbc_data_cleaned, stock_data, on<span class="op">=</span><span class="st">'Date'</span>, how<span class="op">=</span><span class="st">'inner'</span>)</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>cnbc_merged[<span class="st">'Source'</span>] <span class="op">=</span> <span class="st">'CNBC'</span></span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>guardian_merged <span class="op">=</span> pd.merge(guardian_cleaned, stock_data, on<span class="op">=</span><span class="st">'Date'</span>, how<span class="op">=</span><span class="st">'inner'</span>)</span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>guardian_merged[<span class="st">'Source'</span>] <span class="op">=</span> <span class="st">'Guardian'</span></span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>reuters_merged <span class="op">=</span> pd.merge(reuters_cleaned, stock_data, on<span class="op">=</span><span class="st">'Date'</span>, how<span class="op">=</span><span class="st">'inner'</span>)</span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>reuters_merged[<span class="st">'Source'</span>] <span class="op">=</span> <span class="st">'Reuters'</span></span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine all datasets into one</span></span>
-<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>final_dataset <span class="op">=</span> pd.concat([cnbc_merged, guardian_merged, reuters_merged])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Concatenate datasets with stock data</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>cnbc_merged <span class="op">=</span> pd.merge(cnbc_data_cleaned, stock_data, on<span class="op">=</span><span class="st">'Date'</span>, how<span class="op">=</span><span class="st">'inner'</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>cnbc_merged[<span class="st">'Source'</span>] <span class="op">=</span> <span class="st">'CNBC'</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>guardian_merged <span class="op">=</span> pd.merge(guardian_cleaned, stock_data, on<span class="op">=</span><span class="st">'Date'</span>, how<span class="op">=</span><span class="st">'inner'</span>)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>guardian_merged[<span class="st">'Source'</span>] <span class="op">=</span> <span class="st">'Guardian'</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>reuters_merged <span class="op">=</span> pd.merge(reuters_cleaned, stock_data, on<span class="op">=</span><span class="st">'Date'</span>, how<span class="op">=</span><span class="st">'inner'</span>)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>reuters_merged[<span class="st">'Source'</span>] <span class="op">=</span> <span class="st">'Reuters'</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine all datasets into one</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>final_dataset <span class="op">=</span> pd.concat([cnbc_merged, guardian_merged, reuters_merged])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="cell-42" class="cell">
+<div id="cell-41" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>final_dataset.to_csv(<span class="st">"dataset/final_dataset.csv"</span>, index<span class="op">=</span><span class="va">False</span>) </span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>final_dataset.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>final_dataset.to_csv(<span class="st">"dataset/final_dataset.csv"</span>, index<span class="op">=</span><span class="va">False</span>) </span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>final_dataset.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="26">
 <div>
@@ -1011,29 +829,29 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
 </section>
 <section id="tokenize" class="level3">
 <h3 class="anchored" data-anchor-id="tokenize">4. Tokenize</h3>
-<div id="cell-44" class="cell" data-execution_count="30">
+<div id="cell-43" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preprocess the text - clean the headlines</span></span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> preprocess_text(text):</span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> text.lower()</span>
-<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> re.sub(<span class="vs">r'\W'</span>, <span class="st">' '</span>, text)  <span class="co"># remove non-word characters</span></span>
-<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> re.sub(<span class="vs">r'\s+'</span>, <span class="st">' '</span>, text)  <span class="co"># remove extra spaces</span></span>
-<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> text.strip()</span>
-<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>final_dataset[<span class="st">'cleaned_headlines'</span>] <span class="op">=</span> final_dataset[<span class="st">'Headlines'</span>].<span class="bu">apply</span>(preprocess_text)</span>
-<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokenize - Create a vocabulary (word to integer mapping)</span></span>
-<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>all_words <span class="op">=</span> <span class="st">' '</span>.join(final_dataset[<span class="st">'cleaned_headlines'</span>]).split()</span>
-<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>vocab <span class="op">=</span> {word: idx <span class="op">+</span> <span class="dv">1</span> <span class="cf">for</span> idx, word <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">set</span>(all_words))}  <span class="co"># map words to unique integers</span></span>
-<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokenize the dataset - convert each word in a headline to its corresponding integer</span></span>
-<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> tokenize(text, vocab):</span>
-<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [vocab[word] <span class="cf">for</span> word <span class="kw">in</span> text.split() <span class="cf">if</span> word <span class="kw">in</span> vocab]</span>
-<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a>final_dataset[<span class="st">'tokenized_headlines'</span>] <span class="op">=</span> final_dataset[<span class="st">'cleaned_headlines'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: tokenize(x, vocab))</span>
-<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a>final_dataset[[<span class="st">'Headlines'</span>, <span class="st">'tokenized_headlines'</span>]].head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preprocess the text - clean the headlines</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> preprocess_text(text):</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> text.lower()</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> re.sub(<span class="vs">r'\W'</span>, <span class="st">' '</span>, text)  <span class="co"># remove non-word characters</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> re.sub(<span class="vs">r'\s+'</span>, <span class="st">' '</span>, text)  <span class="co"># remove extra spaces</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> text.strip()</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>final_dataset[<span class="st">'cleaned_headlines'</span>] <span class="op">=</span> final_dataset[<span class="st">'Headlines'</span>].<span class="bu">apply</span>(preprocess_text)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokenize - Create a vocabulary (word to integer mapping)</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>all_words <span class="op">=</span> <span class="st">' '</span>.join(final_dataset[<span class="st">'cleaned_headlines'</span>]).split()</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>vocab <span class="op">=</span> {word: idx <span class="op">+</span> <span class="dv">1</span> <span class="cf">for</span> idx, word <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">set</span>(all_words))}  <span class="co"># map words to unique integers</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokenize the dataset - convert each word in a headline to its corresponding integer</span></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> tokenize(text, vocab):</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [vocab[word] <span class="cf">for</span> word <span class="kw">in</span> text.split() <span class="cf">if</span> word <span class="kw">in</span> vocab]</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>final_dataset[<span class="st">'tokenized_headlines'</span>] <span class="op">=</span> final_dataset[<span class="st">'cleaned_headlines'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: tokenize(x, vocab))</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>final_dataset[[<span class="st">'Headlines'</span>, <span class="st">'tokenized_headlines'</span>]].head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="30">
 <div>
@@ -1079,17 +897,17 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
 </div>
 </div>
 </div>
-<div id="cell-45" class="cell" data-execution_count="31">
+<div id="cell-44" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>embedding_size <span class="op">=</span> <span class="dv">50</span></span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>embedding_matrix <span class="op">=</span> {}</span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> word, idx <span class="kw">in</span> vocab.items():</span>
-<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    embedding_matrix[word] <span class="op">=</span> np.random.randn(embedding_size)  <span class="co"># Random vector for each word</span></span>
-<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>embedding_df <span class="op">=</span> pd.DataFrame.from_dict(embedding_matrix, orient<span class="op">=</span><span class="st">'index'</span>)</span>
-<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>embedding_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>embedding_size <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>embedding_matrix <span class="op">=</span> {}</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> word, idx <span class="kw">in</span> vocab.items():</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    embedding_matrix[word] <span class="op">=</span> np.random.randn(embedding_size)  <span class="co"># Random vector for each word</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>embedding_df <span class="op">=</span> pd.DataFrame.from_dict(embedding_matrix, orient<span class="op">=</span><span class="st">'index'</span>)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>embedding_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="31">
 <div>
@@ -1254,59 +1072,59 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
 </section>
 <section id="first-model" class="level2">
 <h2 class="anchored" data-anchor-id="first-model">First Model</h2>
-<div id="cell-47" class="cell" data-execution_count="27">
+<div id="cell-46" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare headlines column for TF-IDF</span></span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean_headlines(data):</span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Lower case all values</span></span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>    data.loc[:, <span class="st">'Headlines'</span>] <span class="op">=</span> data[<span class="st">'Headlines'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: x.lower())</span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove special characters and numbers</span></span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    data.loc[:, <span class="st">'Headlines'</span>] <span class="op">=</span> data[<span class="st">'Headlines'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: re.sub(<span class="vs">r'[^a-z\s]'</span>, <span class="st">' '</span>, x))</span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove extra spaces</span></span>
-<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>    data.loc[:, <span class="st">'Headlines'</span>] <span class="op">=</span> data[<span class="st">'Headlines'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: re.sub(<span class="vs">r'\s+'</span>, <span class="st">' '</span>, x).strip())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare headlines column for TF-IDF</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean_headlines(data):</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Lower case all values</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    data.loc[:, <span class="st">'Headlines'</span>] <span class="op">=</span> data[<span class="st">'Headlines'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: x.lower())</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove special characters and numbers</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    data.loc[:, <span class="st">'Headlines'</span>] <span class="op">=</span> data[<span class="st">'Headlines'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: re.sub(<span class="vs">r'[^a-z\s]'</span>, <span class="st">' '</span>, x))</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove extra spaces</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    data.loc[:, <span class="st">'Headlines'</span>] <span class="op">=</span> data[<span class="st">'Headlines'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: re.sub(<span class="vs">r'\s+'</span>, <span class="st">' '</span>, x).strip())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="cell-48" class="cell" data-execution_count="31">
+<div id="cell-47" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean headlines</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>temp_df <span class="op">=</span> final_dataset.copy()</span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>clean_headlines(temp_df)</span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Group by date and concat all headlines into one str for each day</span></span>
-<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>grouped_dataset <span class="op">=</span> temp_df.groupby(<span class="st">'Date'</span>).agg(</span>
-<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>    Headlines<span class="op">=</span>(<span class="st">'Headlines'</span>, <span class="st">' '</span>.join), </span>
-<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>    trend_up<span class="op">=</span>(<span class="st">'trend_up'</span>, <span class="st">'first'</span>) </span>
-<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>).reset_index()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean headlines</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>temp_df <span class="op">=</span> final_dataset.copy()</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>clean_headlines(temp_df)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Group by date and concat all headlines into one str for each day</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>grouped_dataset <span class="op">=</span> temp_df.groupby(<span class="st">'Date'</span>).agg(</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    Headlines<span class="op">=</span>(<span class="st">'Headlines'</span>, <span class="st">' '</span>.join), </span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    trend_up<span class="op">=</span>(<span class="st">'trend_up'</span>, <span class="st">'first'</span>) </span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>).reset_index()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="cell-49" class="cell" data-execution_count="35">
+<div id="cell-48" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First Model: Logistic Regression Model with TF-IDF features</span></span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> grouped_dataset[[<span class="st">'Headlines'</span>, <span class="st">'trend_up'</span>]].copy()</span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>vectorizer <span class="op">=</span> TfidfVectorizer(max_features<span class="op">=</span><span class="dv">800</span>)  <span class="co"># Limit to top 800 features for simplicity</span></span>
-<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> vectorizer.fit_transform(data[<span class="st">'Headlines'</span>]).toarray()</span>
-<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> data[<span class="st">'trend_up'</span>].astype(<span class="bu">int</span>).values  </span>
-<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LogisticRegression(random_state<span class="op">=</span><span class="dv">42</span>, max_iter<span class="op">=</span><span class="dv">1500</span>)</span>
-<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>model.fit(X_train, y_train)</span>
-<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>y_pred_test <span class="op">=</span> model.predict(X_test)</span>
-<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>y_pred_train <span class="op">=</span> model.predict(X_train)</span>
-<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a>train_accuracy <span class="op">=</span> accuracy_score(y_train, y_pred_train)</span>
-<span id="cb45-18"><a href="#cb45-18" aria-hidden="true" tabindex="-1"></a>test_accuracy <span class="op">=</span> accuracy_score(y_test, y_pred_test)</span>
-<span id="cb45-19"><a href="#cb45-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-20"><a href="#cb45-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Display results</span></span>
-<span id="cb45-21"><a href="#cb45-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Test Accuracy:"</span>, test_accuracy)</span>
-<span id="cb45-22"><a href="#cb45-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Train Accuracy:"</span>, train_accuracy)</span>
-<span id="cb45-23"><a href="#cb45-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Classification Report(Test):</span><span class="ch">\n</span><span class="st">"</span>, classification_report(y_test, y_pred_test))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First Model: Logistic Regression Model with TF-IDF features</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> grouped_dataset[[<span class="st">'Headlines'</span>, <span class="st">'trend_up'</span>]].copy()</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>vectorizer <span class="op">=</span> TfidfVectorizer(max_features<span class="op">=</span><span class="dv">800</span>)  <span class="co"># Limit to top 800 features for simplicity</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> vectorizer.fit_transform(data[<span class="st">'Headlines'</span>]).toarray()</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> data[<span class="st">'trend_up'</span>].astype(<span class="bu">int</span>).values  </span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LogisticRegression(random_state<span class="op">=</span><span class="dv">42</span>, max_iter<span class="op">=</span><span class="dv">1500</span>)</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>model.fit(X_train, y_train)</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>y_pred_test <span class="op">=</span> model.predict(X_test)</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>y_pred_train <span class="op">=</span> model.predict(X_train)</span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>train_accuracy <span class="op">=</span> accuracy_score(y_train, y_pred_train)</span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>test_accuracy <span class="op">=</span> accuracy_score(y_test, y_pred_test)</span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Display results</span></span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Test Accuracy:"</span>, test_accuracy)</span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Train Accuracy:"</span>, train_accuracy)</span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Classification Report(Test):</span><span class="ch">\n</span><span class="st">"</span>, classification_report(y_test, y_pred_test))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Test Accuracy: 0.6384615384615384
@@ -1324,54 +1142,55 @@ weighted avg       0.64      0.64      0.61       130
 </code></pre>
 </div>
 </div>
-<div id="cell-50" class="cell" data-execution_count="37">
+<div id="cell-49" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a range of max_features values to represent model complexity</span></span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>complexities <span class="op">=</span> [<span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">200</span>, <span class="dv">400</span>, <span class="dv">600</span>, <span class="dv">800</span>, <span class="dv">1000</span>, <span class="dv">1200</span>]</span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>train_errors <span class="op">=</span> []</span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>test_errors <span class="op">=</span> []</span>
-<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> max_features <span class="kw">in</span> complexities:</span>
-<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create TF-IDF vectorizer with the current max_features</span></span>
-<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>    vectorizer <span class="op">=</span> TfidfVectorizer(max_features<span class="op">=</span>max_features)</span>
-<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> vectorizer.fit_transform(data[<span class="st">'Headlines'</span>]).toarray()</span>
-<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> data[<span class="st">'trend_up'</span>].astype(<span class="bu">int</span>).values</span>
-<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Split data into training and testing sets</span></span>
-<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>    X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Train logistic regression model</span></span>
-<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> LogisticRegression(random_state<span class="op">=</span><span class="dv">42</span>, max_iter<span class="op">=</span><span class="dv">1500</span>)</span>
-<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a>    model.fit(X_train, y_train)</span>
-<span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb47-19"><a href="#cb47-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Predict and compute errors</span></span>
-<span id="cb47-20"><a href="#cb47-20" aria-hidden="true" tabindex="-1"></a>    train_accuracy <span class="op">=</span> accuracy_score(y_train, model.predict(X_train))</span>
-<span id="cb47-21"><a href="#cb47-21" aria-hidden="true" tabindex="-1"></a>    test_accuracy <span class="op">=</span> accuracy_score(y_test, model.predict(X_test))</span>
-<span id="cb47-22"><a href="#cb47-22" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb47-23"><a href="#cb47-23" aria-hidden="true" tabindex="-1"></a>    train_errors.append(<span class="dv">1</span> <span class="op">-</span> train_accuracy)</span>
-<span id="cb47-24"><a href="#cb47-24" aria-hidden="true" tabindex="-1"></a>    test_errors.append(<span class="dv">1</span> <span class="op">-</span> test_accuracy)</span>
-<span id="cb47-25"><a href="#cb47-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-26"><a href="#cb47-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting the fitting graph</span></span>
-<span id="cb47-27"><a href="#cb47-27" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
-<span id="cb47-28"><a href="#cb47-28" aria-hidden="true" tabindex="-1"></a>plt.plot(complexities, train_errors, label<span class="op">=</span><span class="st">"Training Error"</span>, marker<span class="op">=</span><span class="st">'o'</span>)</span>
-<span id="cb47-29"><a href="#cb47-29" aria-hidden="true" tabindex="-1"></a>plt.plot(complexities, test_errors, label<span class="op">=</span><span class="st">"Test Error"</span>, marker<span class="op">=</span><span class="st">'o'</span>)</span>
-<span id="cb47-30"><a href="#cb47-30" aria-hidden="true" tabindex="-1"></a>plt.axvline(x<span class="op">=</span>complexities[np.argmin(test_errors)], linestyle<span class="op">=</span><span class="st">'--'</span>, color<span class="op">=</span><span class="st">'gray'</span>, label<span class="op">=</span><span class="st">"Optimal Complexity"</span>)</span>
-<span id="cb47-31"><a href="#cb47-31" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Fitting Graph: Training vs. Test Error"</span>)</span>
-<span id="cb47-32"><a href="#cb47-32" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Model Complexity (max_features)"</span>)</span>
-<span id="cb47-33"><a href="#cb47-33" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Error(1 - Accuracy)"</span>)</span>
-<span id="cb47-34"><a href="#cb47-34" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb47-35"><a href="#cb47-35" aria-hidden="true" tabindex="-1"></a>plt.grid()</span>
-<span id="cb47-36"><a href="#cb47-36" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a range of max_features values to represent model complexity</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>complexities <span class="op">=</span> [<span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">200</span>, <span class="dv">400</span>, <span class="dv">600</span>, <span class="dv">800</span>, <span class="dv">1000</span>, <span class="dv">1200</span>]</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>train_errors <span class="op">=</span> []</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>test_errors <span class="op">=</span> []</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> max_features <span class="kw">in</span> complexities:</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create TF-IDF vectorizer with the current max_features</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>    vectorizer <span class="op">=</span> TfidfVectorizer(max_features<span class="op">=</span>max_features)</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> vectorizer.fit_transform(data[<span class="st">'Headlines'</span>]).toarray()</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> data[<span class="st">'trend_up'</span>].astype(<span class="bu">int</span>).values</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Split data into training and testing sets</span></span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>    X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Train logistic regression model</span></span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> LogisticRegression(random_state<span class="op">=</span><span class="dv">42</span>, max_iter<span class="op">=</span><span class="dv">1500</span>)</span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>    model.fit(X_train, y_train)</span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Predict and compute errors</span></span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a>    train_accuracy <span class="op">=</span> accuracy_score(y_train, model.predict(X_train))</span>
+<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a>    test_accuracy <span class="op">=</span> accuracy_score(y_test, model.predict(X_test))</span>
+<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a>    train_errors.append(<span class="dv">1</span> <span class="op">-</span> train_accuracy)</span>
+<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a>    test_errors.append(<span class="dv">1</span> <span class="op">-</span> test_accuracy)</span>
+<span id="cb35-25"><a href="#cb35-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-26"><a href="#cb35-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting the fitting graph</span></span>
+<span id="cb35-27"><a href="#cb35-27" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb35-28"><a href="#cb35-28" aria-hidden="true" tabindex="-1"></a>plt.plot(complexities, train_errors, label<span class="op">=</span><span class="st">"Training Error"</span>, marker<span class="op">=</span><span class="st">'o'</span>)</span>
+<span id="cb35-29"><a href="#cb35-29" aria-hidden="true" tabindex="-1"></a>plt.plot(complexities, test_errors, label<span class="op">=</span><span class="st">"Test Error"</span>, marker<span class="op">=</span><span class="st">'o'</span>)</span>
+<span id="cb35-30"><a href="#cb35-30" aria-hidden="true" tabindex="-1"></a>plt.axvline(x<span class="op">=</span>complexities[np.argmin(test_errors)], linestyle<span class="op">=</span><span class="st">'--'</span>, color<span class="op">=</span><span class="st">'gray'</span>, label<span class="op">=</span><span class="st">"Optimal Complexity"</span>)</span>
+<span id="cb35-31"><a href="#cb35-31" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Fitting Graph: Training vs. Test Error"</span>)</span>
+<span id="cb35-32"><a href="#cb35-32" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Model Complexity (max_features)"</span>)</span>
+<span id="cb35-33"><a href="#cb35-33" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Error(1 - Accuracy)"</span>)</span>
+<span id="cb35-34"><a href="#cb35-34" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb35-35"><a href="#cb35-35" aria-hidden="true" tabindex="-1"></a>plt.grid()</span>
+<span id="cb35-36"><a href="#cb35-36" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="project_files/figure-html/cell-33-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="project_files/figure-html/cell-28-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
+</section>
 </section>
 
 </main>
