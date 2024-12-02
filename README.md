@@ -14,7 +14,8 @@ For the preprocessing process we have 5 main steps:
 1. Features: TF-IDF vectorized text with max_features varying between 50 and 1200.
 2. Training Algorithm: Logistic Regression with 1500 maximum iterations.
 3. Evaluation Metrics: Training and test errors (1 - accuracy rate) were used to analyze model performance and identify underfitting or overfitting.  
-The model achieved 63.8% accuracy on test set and 76.2% on training set.
+The model achieved 55.8% accuracy on test set and 75.2% on training set.
+
 
 
 **Model Evaluation and Future Models**
