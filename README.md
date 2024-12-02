@@ -1,34 +1,19 @@
 # CSE 151A Project
-## Milestone 3: Pre-Processing
+## Milestone 4: Second Model + more
 
-### Data Preprocessing
-For the preprocessing process we have 5 main steps:
-1. Clean out the nulls: We have found null data within the CNBC network dataset. We will be dropping these rows since we cannot fill the data with random words. 
-2. Removing extraneous columns: Two of the datasets have a description column which we will be dropping since we are only going to analyze the headlines
-3. Combine all the datasets: This step will clean and concatenate three news datasets by aligning each row with the appropriate stock date, and then combine them into a unified dataset with features [date, headline, stock price].
-4. Tokenize: This step will turn each word in the dataset into an integer based off a dictionary created by scanning all the headlines
-5. Embeddings: This will be a randomly generated embeddings table that will allow the model to get an embeddings for each word. 
+### Transformer Classifier
+Generally throughout the different iterations of our Transformer model, we found that it finished fitting within the first 10 epochs. This could most likely be occuring do to our large batch sizes and how big the data is. Our best Transformer model is one where we implemented the following improvements: we did hyperparameter tuning to find the ideal number of heads, layers, etc, change the number of outputs in the final layer of the Transformer model from 2 to 1, and had no learning rate decay. This model obtained a test accuracy of 59.2% and a train accuracy of 69.8%. Although this is better than our first model, TFIDF, we feel that there is still room for improvement with other models. Some improvements that can be done to this model is to possibly create and ensemble with a time series model and transform the problem into a regression problem. We believe that there is a lot of noise in the data to do a simple classification, so reworking the problem may utilize the model the best. 
 
-First Model: Logistic Regression with TF-IDF  
-Model Summary  
-1. Features: TF-IDF vectorized text with max_features varying between 50 and 1200.
-2. Training Algorithm: Logistic Regression with 1500 maximum iterations.
-3. Evaluation Metrics: Training and test errors (1 - accuracy rate) were used to analyze model performance and identify underfitting or overfitting.  
-The model achieved 63.8% accuracy on test set and 76.2% on training set.
+**Note:** Please see the end of our [Project Notebook](project.ipynb) to see the final model's fitting graph, train vs. test error, and predictive stats on the test data.
 
+### Conclusion
+Overall our second model performed worse than our expectations. Althrough it beat out the first model, it was very marginal compared to the hyperparameter tuning that was done. There are still possible improvements that can be done as stated in the Transformer Classifier section; however, we believe that the improvements would be limited due to the nature of the model and the data itself. 
 
-### Where does your model fit in the fitting graph? and What are the next models you are thinking of and why?
+### Future Models
+Another that we plan to look into are LSTMs. These types of models perform in both NLP tasks and time series tasks. Since our problem is heavily dependent on those two things, LSTMs could be the perfect model.
+We have also already began working with BERT because it is bidirectional and it is specifically built for sentiment analysis. We believe that the combination of these facts along with attention can boost the accuracy on this dataset. 
 
-Based on the fitting graph:
+**Things we did:**
+New grouped dataset for the Transformer Classifier. [View Dataset](grouped_dataset.csv)
 
-1. Optimal Complexity: The model performed best at max_features = 800, achieving the lowest test error. This suggests that the model is most balanced at this level of feature complexity.
-2. Overfitting Zone: When max_features exceeded 800, the test error began to increase while training error continued to decrease, indicating overfitting.
-3. Underfitting Zone: At lower values of max_features (e.g., 50–200), both training and test errors were high, reflecting insufficient model complexity.
-
-
-Things we did:
-Cleaned and combined the dataset. [View Dataset](dataset/final_dataset.csv)
-
-Exploratory Data Analysis. [View EDA](EDA.ipynb)
-
-First model. [View Moddel](Model1.ipynb)
+Transformer Classifier Model. [View Model](project.ipynb) (Under the Transformer Classifier header)
