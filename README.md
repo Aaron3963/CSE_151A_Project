@@ -17,3 +17,46 @@ We have also already began working with BERT because it is bidirectional and it 
 New grouped dataset for the Transformer Classifier. [View Dataset](grouped_dataset.csv)
 
 Transformer Classifier Model. [View Model](project.ipynb) (Under the Transformer Classifier header)
+
+
+# The Impact of News on Stock Market Predictions: Analyzing and predicting S&P 500 with News Headlines
+
+## Introduction
+Stock trading, as a critical component of the modern economic framework, profoundly impacts almost every aspect of our daily lives. The stock market itself serves as a vital barometer of economic trends, 
+reflecting the trajectories of companies, regions, nations, and even the global economy. Stock prices fluctuate every second, with international news often playing a significant role in these changes. 
+In the past, people relied on newspapers the next day to access news, but today, information is transmitted instantaneously to electronic devices worldwide through the internet.
+
+In this project, we aim to train a model capable of predicting the rise or fall of the S&P 500 index immediately upon receiving news headlines. 
+This tool can empower individuals to make more informed financial decisions, even if they lack expertise in the relevant industry or region covered by the news. 
+For this purpose, we collected daily news headlines from CNBC, The Guardian, and Reuters from 2018 to 2020, along with daily trading data for the S&P 500 during the same period.
+
+### Exploratory Data Analysis (EDA)
+
+#### News Headlines Dataset
+
+We gathered a total of:
+	•	2,800 headlines from CNBC,
+	•	17,800 from The Guardian, and
+	•	32,770 from Reuters.
+Analysis of headline lengths revealed that most headlines range from 60-70 words, with maximum lengths of 100 words for CNBC and Reuters, and 120 words for The Guardian.
+![length of news](dataset/graph/word_length.png)
+
+Monthly distribution of headlines shows a higher concentration of news published in the earlier months of each year, as depicted in the graphs.
+![monthly](dataset/graph/monthly.png)
+Further analysis identified the most frequently used words in the headlines. A histogram of word occurrences revealed notable terms such as fears, energy, government, 
+China, and shares, while common filler words (e.g., articles, prepositions, pronouns) were excluded from the visualization for clarity.
+![sig_word](dataset/graph/sig_word.png)
+
+
+#### S&P 500 Trading Dataset
+
+The S&P 500 dataset, spanning December 1, 2017, to July 31, 2020, includes 669 daily records with no missing values. The dataset contains columns for High, Low, Close, and Volume. Key summary statistics are as follows:
+	•	Average prices: High (2883), Low (2849), and Close (2867),
+	•	Standard deviations: approximately 200 points, indicating moderate volatility,
+	•	Average daily trading volume: 3.97 billion shares, ranging from 1.3 billion to 9.05 billion shares, reflecting spikes in market activity during major events.
+
+Normalization or standardization will be applied to handle the scale differences between price and volume data, ensuring consistency during analysis.
+
+![k_line](dataset/graph/k_line.png)
+
+The graph of S&P 500 prices over the project period highlights a significant dip in early 2020, driven by the onset of the COVID-19 pandemic. This event likely influenced the predictive power of news headlines, as the pandemic triggered global market uncertainty and panic. While COVID-related news may dominate the model’s attention, it could skew the embeddings of other words due to its overwhelming impact during this period.
