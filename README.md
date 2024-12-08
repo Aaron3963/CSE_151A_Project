@@ -61,17 +61,23 @@ Looking ahead, integrating advanced techniques like LSTMs for time-series analys
 
 
 ## Statement of Collaboration
-Xueyan Shi
+- **Xueyan Shi**:
 
-Satvik Sriram
+- **Satvik Sriram**:
 
-Sunan Xu
+- **Sunan Xu**:
 
-Kelly Gong
+- **Kelly**:
+  - Collected and analyzed the S&P 500 stock data.
+  - Conducted data preprocessing to ensure model readiness.
+  - Built the LSTM model for Model 2, performed hyperparameter tuning, and compared it with the Transformer classifier.
+  - Compiled the documentation and drafted the final report.
 
-Kliment Ho
+- **Kliment Ho**:
 
-Qianjin Zhou
+- **Qianjin Zhou**:
+
+We collaboratively discussed the project topic and model approaches. Regularly reviewed and compared model results as a team to identify areas for improvement and achieve better performance.
 
 --
 ## Milestone 4: Second Model + more
