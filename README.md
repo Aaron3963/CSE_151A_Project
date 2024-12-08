@@ -348,7 +348,10 @@ Now we try to simulate it on the test dataset. We are using [Vanguard’s S&P500
 
 At last we deploy our strategy and compare it with a base strategy of holding the ETF for the entry time.
 
-[https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-48-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-48-output-2.png)
+Portfolio is 111.7785% after half a year.  
+Long holding is 97.8522% after half a year.  
+
+![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-48-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-48-output-2.png)
 
 At last we can see our portfolio surpassed the base strategy significantly. We got 10% gross profit within 6 months, which our base strategy was hard to maintain itself.
 
