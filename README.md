@@ -10,7 +10,9 @@ In this project, we aim to train a model capable of predicting the rise or fall 
 This tool can empower individuals to make more informed financial decisions, even if they lack expertise in the relevant industry or region covered by the news. 
 For this purpose, we collected daily news headlines from CNBC, The Guardian, and Reuters from 2018 to 2020, along with daily trading data for the S&P 500 during the same period.
 
-## Exploratory Data Analysis (EDA)
+
+## Methods
+### Exploratory Data Analysis (EDA)
 
 #### News Headlines Dataset
 
@@ -26,19 +28,19 @@ The Timeframes of data:
 
 We can see here that all of the news datasets have varying numbers of data points ranging from 2800 to 32700. This will not be a problem for us since our question focuses on the impact of news headlines in general on the S&P 500, so all of this data will be combined in to a larger dataset ordered by the date of the headline. We can also see there is null data within the CNBC dataset which will be removed.
 
-#### Headline Length
+##### Headline Length
 
 ![length of news](dataset/graph/word_length.png)
 
 These histograms display the number of headlines given a specific length. Analysis of headline lengths revealed that most headlines range from 60-70 words, with maximum lengths of 100 words for CNBC and Reuters, and 120 words for The Guardian.
 
-#### Headline Distribution
+##### Headline Distribution
 
 To find out the distribution of headlines throughout the time frame, we generated a graph with headlines colored differently in each month of the year. 
 ![monthly](dataset/graph/monthly.png)
 These graphs depict the number of headlines per month per year. With this, we can see that the earlier months of the year seem to have a higher concentration of headlines.
 
-#### Word Frequency
+##### Word Frequency
 
 A short analysis on word frequency. We used the stopword dictionary in `nltk` to help filtering out words like `a` and `the`.
 
@@ -57,9 +59,9 @@ A short analysis on word frequency. We used the stopword dictionary in nltk to h
 ![sig_word](dataset/graph/sig_word.png)
 
 
-## S&P 500 Trading Dataset
+#### S&P 500 Trading Dataset
 
-#### Statistical Analysis
+##### Statistical Analysis
 
 |  | High | Low | Close | Volume |
 | --- | --- | --- | --- | --- |
@@ -79,13 +81,13 @@ The S&P 500 dataset, spanning December 1, 2017, to July 31, 2020, includes 669 d
 
 To prepare for analysis, normalization or standardization may be beneficial to handle the scale differences, particularly between price and volume data. This initial overview confirms a relatively stable daily distribution, setting up further analysis on trends, volatility, and potential event impacts on S&P 500 performance.
 
-#### Close Price over Time
+##### Close Price over Time
 
 ![k_line](dataset/graph/k_line.png)
 
 This is the stock price of the S&P 500 over min and max dates covered by the news headlines. Some noticeable features that are included in this graph is the large dip during early 2020 caused by covid. This will have an interesting impact on our model since the news did play a big role in the scare factor for COVID-19, but the fact that it was caused by a global epidemic may skew the embeddings of other words.
 
-## Data Preprocessing
+### Data Preprocessing
 
 Clean out `NaT` values in `Time` column of three datasets.
 
@@ -133,13 +135,11 @@ For our first model, we will ignore temporal relationship by treating every news
 | 3 | iq capital ceo keith bliss says tech and healt... | keith bliss iq capital ceo joins closing bell ... | 2020-07-17 | 3224.729980 | True | CNBC |
 | 4 | wall street delivered the kind of pullback ive... | look for the stocks of high-quality companies ... | 2020-07-16 | 3215.570068 | True | CNBC |
 
-## Methods
-
-#### Base Model
+### Base Model
 
 We are using logistic regression with TF-IDF features as our base model.
 
-##### Individual Headline Model
+#### Individual Headline Model
 
 For this model, we are treating every news are individual data points. This is guarantee to fail because there is way to little information contained in a single news title, and there will be too much noise.
 
@@ -155,7 +155,7 @@ Report on test dataset:
 | macro avg | 0.480633 | 0.497257 | 0.367768 | 9453.000000 |
 | weighted avg | 0.482023 | 0.514757 | 0.379281 | 9453.000000 |
 
-##### Joint Headline Model
+#### Joint Headline Model
 
 By joining all headlines of the same day in to one sentence, we hope that TF-IDF could capture more information than our previous model.
 
@@ -185,12 +185,12 @@ We also experimented in the amount of features TF-IDF should have in order to ha
 
 As expected, we do not need to high complexity for TF-IDF, as increasing it will overfit our training dataset. A complexity around 800 yields the best result on the test set with accuracy about 55%.
 
-#### Transformer Model[](https://aaron3963.github.io/CSE_151A_Project/#transformer-model)
+### Transformer Model[](https://aaron3963.github.io/CSE_151A_Project/#transformer-model)
 
 We will be using our joined dataset which concatenate all news in the same day to one line. The main reason for this is because if we use single data news data points, there will be too much noise in our dataset, and the model cannot learn any features. Notice that `shuffle` is set to `False` in our split. This is because the stock and news data are all time-series, which we cannot inform our model about the future.
 
 
-##### Preparation
+#### Preparation
 
 We used a tokenizer from HuggingFace, which give unique tokens to every word.
 
@@ -202,7 +202,7 @@ The module is a custom classifier from PyTorch. We will be utilizing the `Transf
 Below are some helper methods for calculating evaluation metrics and graphs.
 
 
-##### Base Classifier Transformer Model
+#### Base Classifier Transformer Model
 
 To start, we are using the following hyperparameters.
 
@@ -218,7 +218,7 @@ Epoch [25/25], Loss: 0.3440, Train Acc: 0.9923, Test Acc: 0.5385
 
 As we can tell, the test accuracy is around 50%, which means the model did not learn anything useful and ended up guessing randomly. We are not using a model which does nothing more than just coin-flipping, so we did more hyperparameter tunning.
 
-##### Changing to Singular Class
+#### Changing to Singular Class
 
 Since we are doing binary classification, there is no need for the output to be two classes, we can just merge it into one class.
 
@@ -232,7 +232,7 @@ Epoch [25/25], Loss: 0.6474, Train Acc: 0.8162, Test Acc: 0.5231
 
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-33-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-33-output-2.png)
 
-##### Removing Stop Words
+#### Removing Stop Words
 
 ```
 Epoch [5/25], Loss: 0.7025, Train Acc: 0.5725, Test Acc: 0.6154
@@ -243,7 +243,7 @@ Epoch [25/25], Loss: 0.5669, Train Acc: 0.7427, Test Acc: 0.6077
 ```
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-36-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-36-output-2.png)
 
-##### Removing Specific Words (remix, cramers lightning round)
+#### Removing Specific Words (remix, cramers lightning round)
 
 ```
 Epoch [5/25], Loss: 0.6566, Train Acc: 0.5725, Test Acc: 0.5385
@@ -255,7 +255,7 @@ Epoch [25/25], Loss: 0.5859, Train Acc: 0.7292, Test Acc: 0.5462
 
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-39-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-39-output-2.png)
 
-##### Increasing number of heads
+#### Increasing number of heads
 
 
 ```
@@ -268,7 +268,7 @@ Epoch [25/25], Loss: 0.6778, Train Acc: 0.8472, Test Acc: 0.4769
 
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-41-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-41-output-2.png)
 
-##### Increasing Number of Heads with LR Decay
+#### Increasing Number of Heads with LR Decay
 
 
 ```
@@ -293,7 +293,7 @@ Our model did relatively well on predicting, with very few false negatives, whic
 
 ## Results
 
-#### Performance Summary of Models
+### Performance Summary of Models
 
 We evaluated multiple machine learning models to predict the daily movement of the S&P 500 index based on news headlines. The table below summarizes the training and testing accuracies of the models used in this study:
 
@@ -308,7 +308,7 @@ We evaluated multiple machine learning models to predict the daily movement of t
 | Transformer Classifier (Increased Heads)           | 84.7                   | 47.7                  |
 | Transformer Classifier (Increased Heads + LR Decay)| 65.0                   | 50.8                  |
 
-#### Model Performance Analysis
+### Model Performance Analysis
 
 The Logistic Regression model with TF-IDF features served as a baseline for our analysis. Performance improved when headlines were aggregated daily rather than analyzed individually. This finding highlights the importance of incorporating richer contextual information to improve predictions.
 
