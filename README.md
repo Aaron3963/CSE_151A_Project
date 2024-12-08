@@ -228,7 +228,15 @@ As we can tell, the test accuracy is around 50%, which means the model did not l
 
 Since we are doing binary classification, there is no need for the output to be two classes, we can just merge it into one class.
 
+```
+Epoch [5/25], Loss: 0.7740, Train Acc: 0.5629, Test Acc: 0.5538
+Epoch [10/25], Loss: 0.7029, Train Acc: 0.6402, Test Acc: 0.4923
+Epoch [15/25], Loss: 0.6256, Train Acc: 0.6983, Test Acc: 0.5000
+Epoch [20/25], Loss: 0.6154, Train Acc: 0.7737, Test Acc: 0.4769
+Epoch [25/25], Loss: 0.6474, Train Acc: 0.8162, Test Acc: 0.5231
+```
 
+![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-33-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-33-output-2.png)
 
 ### Removing Stop Words
 
@@ -239,8 +247,7 @@ Epoch [15/25], Loss: 0.5229, Train Acc: 0.6905, Test Acc: 0.6000
 Epoch [20/25], Loss: 0.7097, Train Acc: 0.7079, Test Acc: 0.6077
 Epoch [25/25], Loss: 0.5669, Train Acc: 0.7427, Test Acc: 0.6077
 ```
-
-![](project_files/figure-html/cell-36-output-2.png)
+![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-36-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-36-output-2.png)
 
 ### Removing Specific Words (remix, cramers lightning round)
 
@@ -252,7 +259,7 @@ Epoch [20/25], Loss: 0.7210, Train Acc: 0.6480, Test Acc: 0.5692
 Epoch [25/25], Loss: 0.5859, Train Acc: 0.7292, Test Acc: 0.5462
 ```
 
-![](project_files/figure-html/cell-39-output-2.png)
+![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-39-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-39-output-2.png)
 
 ### Increasing number of heads
 
@@ -265,7 +272,7 @@ Epoch [20/25], Loss: 0.5875, Train Acc: 0.7776, Test Acc: 0.5077
 Epoch [25/25], Loss: 0.6778, Train Acc: 0.8472, Test Acc: 0.4769
 ```
 
-![](project_files/figure-html/cell-41-output-2.png)
+![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-41-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-41-output-2.png)
 
 #### Increasing Number of Heads with LR Decay
 
@@ -278,7 +285,7 @@ Epoch [20/25], Loss: 0.6835, Train Acc: 0.6422, Test Acc: 0.5077
 Epoch [25/25], Loss: 0.5104, Train Acc: 0.6499, Test Acc: 0.5077
 ```
 
-![](project_files/figure-html/cell-43-output-2.png)
+![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-43-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-43-output-2.png)
 
 ### Conclusion and Best Model
 
@@ -291,6 +298,32 @@ Total Samples: 517. Correct: 273, True Positive: 238, True Negative: 35. False P
 Our model did relatively well on predicting, with very few false negatives, which we can take advantage of it.
 
 ## Results
+
+## Results
+
+#### Performance Summary of Models
+
+We evaluated multiple machine learning models to predict the daily movement of the S&P 500 index based on news headlines. The table below summarizes the training and testing accuracies of the models used in this study:
+
+| **Model**                                     | **Train Accuracy (%)** | **Test Accuracy (%)** |
+|-----------------------------------------------|-------------------------|------------------------|
+| Logistic Regression (TF-IDF, Individual Headlines) | 57.7                   | 51.5                  |
+| Logistic Regression (TF-IDF, Joint Headlines)      | 64.2                   | 54.6                  |
+| Transformer Classifier (Baseline)                  | 66.2                   | 50.0                  |
+| Transformer Classifier (Single Class Output)       | 81.6                   | 52.3                  |
+| Transformer Classifier (Stop Word Removal)         | 74.3                   | 61.5                  |
+| Transformer Classifier (Removing Specific Words)   | 72.9                   | 54.6                  |
+| Transformer Classifier (Increased Heads)           | 84.7                   | 47.7                  |
+| Transformer Classifier (Increased Heads + LR Decay)| 65.0                   | 50.8                  |
+
+#### Model Performance Analysis
+
+The Logistic Regression model with TF-IDF features served as a baseline for our analysis. Performance improved when headlines were aggregated daily rather than analyzed individually. This finding highlights the importance of incorporating richer contextual information to improve predictions.
+
+Transformer-based models demonstrated varied performance based on preprocessing and hyperparameter tuning. The Transformer Classifier with stop word removal achieved the highest test accuracy of **61.5%**, showcasing the significance of reducing noise in textual data. However, the other configurations of Transformer models, such as increasing the number of attention heads or applying learning rate decay, failed to generalize effectively, often resulting in overfitting.
+
+Overall, while some models outperformed random guessing, the relatively modest accuracy highlights the challenges inherent in predicting stock market movements based solely on news headlines. These results reflect the complexity of financial markets, which depend on multiple interrelated factors beyond news sentiment.
+
 
 ## Discussion
 
@@ -311,7 +344,7 @@ Looking ahead, integrating advanced techniques like LSTMs for time-series analys
 
 Before we make our strategy, lets visualize how our model performs on the training dataset.
 
-![](project_files/figure-html/cell-45-output-1.png)
+![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-45-output-1.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-45-output-1.png)
 
 From the graph above, we know that most of the time our model is predicting `true`. We can utilize it because from our previous section, we know that our model has very few false negatives, so we can be certain that most of the times the model is able to predict upcoming downfalls of the index. So we can make our strategy as the following:
 
@@ -323,7 +356,7 @@ Now we try to simulate it on the test dataset. We are using [Vanguard’s S&P500
 
 At last we deploy our strategy and compare it with a base strategy of holding the ETF for the entry time.
 
-![](project_files/figure-html/cell-48-output-2.png)
+[https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-48-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-48-output-2.png)
 
 At last we can see our portfolio surpassed the base strategy significantly. We got 10% gross profit within 6 months, which our base strategy was hard to maintain itself.
 
@@ -344,9 +377,7 @@ At last we can see our portfolio surpassed the base strategy significantly. We g
 
 - **Kliment Ho**:
 
-- **Qianjin Zhou**:
-
-Worked on EDA and generated deadline distribution graphs. Preprocessed the data through cleaning headline text. Developed the baseline model: Logistic Regression with TF-IDF on joint headlines. (grouping entries by date and concatenated all the headlines for each day into a single string to improve TF-IDF predictive power). Contributed to final report.
+- **Qianjin Zhou**: Worked on EDA and generated headline distribution graphs. Contributed to data preprocessed by cleaning headline text. Developed and fine-tuned the joint headlines baseline model with Logistic Regression with TF-IDF (grouping entries by date and concatenated all the headlines for each day into a single string to improve TF-IDF predictive power). Also contributed to final report writeup and wrote the results section.
 
 We collaboratively discussed the project topic and model approaches. Regularly reviewed and compared model results as a team to identify areas for improvement and achieve better performance.
 
