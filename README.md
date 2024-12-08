@@ -368,6 +368,12 @@ Another that we plan to look into are LSTMs. These types of models perform in bo
 - **Satvik Sriram**:
 
 - **Sunan Xu**:
+  - Analyzed the word distribution and their siginificance in the hdeadlines of news data, 
+  - Converted the data to and save them to do the further analysis.  
+  - Helped to built the LSTM model for Model 2, performed hyperparameter tuning, and compared it with the Transformer classifier.
+  - Compiled the documentation and drafted the final report.
+
+
 
 - **Kelly**:
   - Collected and analyzed the S&P 500 stock data.
