@@ -299,8 +299,6 @@ Our model did relatively well on predicting, with very few false negatives, whic
 
 ## Results
 
-## Results
-
 #### Performance Summary of Models
 
 We evaluated multiple machine learning models to predict the daily movement of the S&P 500 index based on news headlines. The table below summarizes the training and testing accuracies of the models used in this study:
