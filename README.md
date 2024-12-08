@@ -10,38 +10,285 @@ In this project, we aim to train a model capable of predicting the rise or fall 
 This tool can empower individuals to make more informed financial decisions, even if they lack expertise in the relevant industry or region covered by the news. 
 For this purpose, we collected daily news headlines from CNBC, The Guardian, and Reuters from 2018 to 2020, along with daily trading data for the S&P 500 during the same period.
 
-### Exploratory Data Analysis (EDA)
+## Exploratory Data Analysis (EDA)
 
 #### News Headlines Dataset
 
-We gathered a total of:
-	•	2,800 headlines from CNBC,
-	•	17,800 from The Guardian, and
-	•	32,770 from Reuters.
-Analysis of headline lengths revealed that most headlines range from 60-70 words, with maximum lengths of 100 words for CNBC and Reuters, and 120 words for The Guardian.
+The three news datasets are obtained through [Kaggle](https://www.kaggle.com/datasets/notlucasp/financial-news-headlines/data). The author mentioned these data are scraped from CNBC, the Guardian, and Reuters official websites, the headlines in these datasets reflects the overview of the U.S. economy and stock market every day for the past year to 2 years.
+
+The Timeframes of data:
+
+- Data scraped from CNBC contains the headlines, last updated date, and the preview text of articles from the end of `December 2017` to `July 19th, 2020`.
+- Data scraped from the Guardian Business contains the headlines and last updated date of articles from the end of `December 2017` to `July 19th, 2020` since the Guardian Business does not offer preview text.
+- Data scraped from Reuters contains the headlines, last updated date, and the preview text of articles from the end of `March 2018` to `July 19th, 2020`.
+
+![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-4-output-1.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-4-output-1.png)
+
+We can see here that all of the news datasets have varying numbers of data points ranging from 2800 to 32700. This will not be a problem for us since our question focuses on the impact of news headlines in general on the S&P 500, so all of this data will be combined in to a larger dataset ordered by the date of the headline. We can also see there is null data within the CNBC dataset which will be removed.
+
+#### Headline Length
+
 ![length of news](dataset/graph/word_length.png)
 
-Monthly distribution of headlines shows a higher concentration of news published in the earlier months of each year, as depicted in the graphs.
+These histograms display the number of headlines given a specific length. Analysis of headline lengths revealed that most headlines range from 60-70 words, with maximum lengths of 100 words for CNBC and Reuters, and 120 words for The Guardian.
+
+#### Headline Distribution
+
+To find out the distribution of headlines throughout the time frame, we generated a graph with headlines colored differently in each month of the year. 
 ![monthly](dataset/graph/monthly.png)
+These graphs depict the number of headlines per month per year. With this, we can see that the earlier months of the year seem to have a higher concentration of headlines.
+
+#### Word Frequency
+
+A short analysis on word frequency. We used the stopword dictionary in `nltk` to help filtering out words like `a` and `the`.
+
+![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-11-output-1.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-11-output-1.png)
+
+![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-11-output-1.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-11-output-1.png)
+
+![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-11-output-3.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-11-output-3.png)
+
+Most of the words are meaningful, but who is `cramer` in the CNBC dataset? Turns out [Jim Cramer](https://en.wikipedia.org/wiki/Jim_Cramer) is the host of various financial programs in CNBC. We will prune him out from the CNBC dataset later.
+
 Further analysis identified the most frequently used words in the headlines. A histogram of word occurrences revealed notable terms such as fears, energy, government, 
 China, and shares, while common filler words (e.g., articles, prepositions, pronouns) were excluded from the visualization for clarity.
+A short analysis on word frequency. We used the stopword dictionary in nltk to help filtering out words like a and the.
+
 ![sig_word](dataset/graph/sig_word.png)
 
 
-#### S&P 500 Trading Dataset
+## S&P 500 Trading Dataset
+
+#### Statistical Analysis
+
+|  | High | Low | Close | Volume |
+| --- | --- | --- | --- | --- |
+| count | 669.000000 | 669.000000 | 669.000000 | 6.690000e+02 |
+| mean | 2883.568308 | 2849.033738 | 2867.277964 | 3.965081e+09 |
+| std | 198.117998 | 206.057495 | 202.285824 | 1.154337e+09 |
+| min | 2300.729980 | 2191.860107 | 2237.399902 | 1.296530e+09 |
+| 25% | 2739.189941 | 2709.540039 | 2724.439941 | 3.300220e+09 |
+| 50% | 2856.669922 | 2825.389893 | 2843.489990 | 3.635780e+09 |
+| 75% | 2999.149902 | 2970.090088 | 2984.870117 | 4.156640e+09 |
+| max | 3393.520020 | 3378.830078 | 3386.149902 | 9.053950e+09 |
 
 The S&P 500 dataset, spanning December 1, 2017, to July 31, 2020, includes 669 daily records with no missing values. The dataset contains columns for High, Low, Close, and Volume. Key summary statistics are as follows:
 	•	Average prices: High (2883), Low (2849), and Close (2867),
 	•	Standard deviations: approximately 200 points, indicating moderate volatility,
 	•	Average daily trading volume: 3.97 billion shares, ranging from 1.3 billion to 9.05 billion shares, reflecting spikes in market activity during major events.
 
-Normalization or standardization will be applied to handle the scale differences between price and volume data, ensuring consistency during analysis.
+To prepare for analysis, normalization or standardization may be beneficial to handle the scale differences, particularly between price and volume data. This initial overview confirms a relatively stable daily distribution, setting up further analysis on trends, volatility, and potential event impacts on S&P 500 performance.
+
+#### Close Price over Time
 
 ![k_line](dataset/graph/k_line.png)
 
-The graph of S&P 500 prices over the project period highlights a significant dip in early 2020, driven by the onset of the COVID-19 pandemic. This event likely influenced the predictive power of news headlines, as the pandemic triggered global market uncertainty and panic. While COVID-related news may dominate the model’s attention, it could skew the embeddings of other words due to its overwhelming impact during this period.
+This is the stock price of the S&P 500 over min and max dates covered by the news headlines. Some noticeable features that are included in this graph is the large dip during early 2020 caused by covid. This will have an interesting impact on our model since the news did play a big role in the scare factor for COVID-19, but the fact that it was caused by a global epidemic may skew the embeddings of other words.
+
+## Data Preprocessing
+
+Clean out `NaT` values in `Time` column of three datasets.
+
+#### Cleaning Text
+
+Here we did our first cleaning by converting all characters to lower case, and remove extra spaces, quotation marks and other unwanted ones. We are also removing `Jim Cramer`, as well as his show `Mad Money` from the CNBC dataset.
+
+|  | Headlines | Time | Description |
+| --- | --- | --- | --- |
+| 0 | a better way to invest in the covid-19 vaccine... | 2020-07-17 19:51:00 | host recommended buying four companies that ar... |
+| 1 | cramers lightning round i would own teradyne | 2020-07-17 19:33:00 | host rings the lightning round bell which mean... |
+| 3 | cramers week ahead big week for earnings even ... | 2020-07-17 19:25:00 | well pay more for the earnings of the non-covi... |
+| 4 | iq capital ceo keith bliss says tech and healt... | 2020-07-17 16:24:00 | keith bliss iq capital ceo joins closing bell ... |
+| 5 | wall street delivered the kind of pullback ive... | 2020-07-16 19:36:00 | look for the stocks of high-quality companies ... |
+
+#### Add Prediction Target
+
+Since our goal is to relate news outlets with S&P500, part of our project will be focusing on the trend prediction of future S&P 500 price change. Which we created a binary column `trend_up` which will be `True` if the price current trading date is lower than tomorrow’s.
+
+|  | Date | Close | trend\_up |
+| --- | --- | --- | --- |
+| 0 | 2017-12-01 | 2642.219971 | False |
+| 1 | 2017-12-04 | 2639.439941 | False |
+| 2 | 2017-12-05 | 2629.570068 | False |
+| 3 | 2017-12-06 | 2629.270020 | True |
+| 4 | 2017-12-07 | 2636.979980 | True |
+
+We also want to make sure that the proportion `True` and `False` are balanced.
+
+![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-18-output-1.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-18-output-1.png)
+
+#### Set Time Granularity
+
+Though some of the datasets has timestamp with minute-wise precisions, we only want to research on a daily basis.
+
+#### Concatenate 3 New Datasets
+
+For our first model, we will ignore temporal relationship by treating every news as an independent datapoint. We merged all datasets into one, along with the prediction target.
+
+|  | Headlines | Description | Date | Close | trend\_up | Source |
+| --- | --- | --- | --- | --- | --- | --- |
+| 0 | a better way to invest in the covid-19 vaccine... | host recommended buying four companies that ar... | 2020-07-17 | 3224.729980 | True | CNBC |
+| 1 | cramers lightning round i would own teradyne | host rings the lightning round bell which mean... | 2020-07-17 | 3224.729980 | True | CNBC |
+| 2 | cramers week ahead big week for earnings even ... | well pay more for the earnings of the non-covi... | 2020-07-17 | 3224.729980 | True | CNBC |
+| 3 | iq capital ceo keith bliss says tech and healt... | keith bliss iq capital ceo joins closing bell ... | 2020-07-17 | 3224.729980 | True | CNBC |
+| 4 | wall street delivered the kind of pullback ive... | look for the stocks of high-quality companies ... | 2020-07-16 | 3215.570068 | True | CNBC |
 
 ## Methods
+
+#### Base Model
+
+We are using logistic regression with TF-IDF features as our base model.
+
+##### Individual Headline Model
+
+For this model, we are treating every news are individual data points. This is guarantee to fail because there is way to little information contained in a single news title, and there will be too much noise.
+
+Test Accuracy: 0.5147572199301809  
+Train Accuracy: 0.5766158891357241  
+Report on test dataset:
+
+|  | precision | recall | f1-score | support |
+| --- | --- | --- | --- | --- |
+| False | 0.443804 | 0.033861 | 0.062921 | 4548.000000 |
+| True | 0.517461 | 0.960652 | 0.672614 | 4905.000000 |
+| accuracy | 0.514757 | 0.514757 | 0.514757 | 0.514757 |
+| macro avg | 0.480633 | 0.497257 | 0.367768 | 9453.000000 |
+| weighted avg | 0.482023 | 0.514757 | 0.379281 | 9453.000000 |
+
+##### Joint Headline Model
+
+By joining all headlines of the same day in to one sentence, we hope that TF-IDF could capture more information than our previous model.
+
+|  | Date | Headlines | trend\_up |
+| --- | --- | --- | --- |
+| 0 | 2017-12-18 | france saves marquis de sades 120 days of sodo... | False |
+| 1 | 2017-12-19 | house prices to fall in london and south-east ... | False |
+| 2 | 2017-12-20 | hedge funds fail to stop billion-dollar brain ... | True |
+| 3 | 2017-12-21 | guardian brexit watch brexit helped push down ... | False |
+| 4 | 2017-12-22 | says owning too many stocks and too little cas... | False |
+
+Test Accuracy: 0.5461538461538461  
+Train Accuracy: 0.6421663442940039  
+Report on test dataset:  
+
+|  | precision | recall | f1-score | support |
+| --- | --- | --- | --- | --- |
+| False | 0.333333 | 0.035088 | 0.063492 | 57.000000 |
+| True | 0.556452 | 0.945205 | 0.700508 | 73.000000 |
+| accuracy | 0.546154 | 0.546154 | 0.546154 | 0.546154 |
+| macro avg | 0.444892 | 0.490147 | 0.382000 | 130.000000 |
+| weighted avg | 0.458623 | 0.546154 | 0.421201 | 130.000000 |
+
+We also experimented in the amount of features TF-IDF should have in order to have the best performance.
+
+![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-31-output-3.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-31-output-3.png)
+
+As expected, we do not need to high complexity for TF-IDF, as increasing it will overfit our training dataset. A complexity around 800 yields the best result on the test set with accuracy about 55%.
+
+#### Transformer Model[](https://aaron3963.github.io/CSE_151A_Project/#transformer-model)
+
+We will be using our joined dataset which concatenate all news in the same day to one line. The main reason for this is because if we use single data news data points, there will be too much noise in our dataset, and the model cannot learn any features. Notice that `shuffle` is set to `False` in our split. This is because the stock and news data are all time-series, which we cannot inform our model about the future.
+
+Code
+
+```
+data = pd.read_csv("./dataset/grouped_dataset.csv")
+train_dataset, test_dataset = train_test_split(data, test_size=0.2, shuffle=False, random_state=SEED)
+```
+
+##### Preparation
+
+We used a tokenizer from HuggingFace, which give unique tokens to every word.
+
+The `Dataset` class to create PyTorch’s data loader.
+
+
+The module is a custom classifier from PyTorch. We will be utilizing the `TransformerEncoderLayer`, as our prediction class is only using the encoder. After the encoder, we added a fully connected layer so the output will be `num_output` of `logits`.
+
+Below are some helper methods for calculating evaluation metrics and graphs.
+
+
+##### Base Classifier Transformer Model
+
+To start, we are using the following hyperparameters.
+
+```
+Epoch [5/25], Loss: 0.6124, Train Acc: 0.6615, Test Acc: 0.5000
+Epoch [10/25], Loss: 0.5535, Train Acc: 0.5919, Test Acc: 0.5615
+Epoch [15/25], Loss: 0.5094, Train Acc: 0.9439, Test Acc: 0.4769
+Epoch [20/25], Loss: 0.3591, Train Acc: 0.9884, Test Acc: 0.5000
+Epoch [25/25], Loss: 0.3440, Train Acc: 0.9923, Test Acc: 0.5385
+```
+
+![](project_files/figure-html/cell-31-output-3.png)
+
+As we can tell, the test accuracy is around 50%, which means the model did not learn anything useful and ended up guessing randomly. We are not using a model which does nothing more than just coin-flipping, so we did more hyperparameter tunning.
+
+### Changing to Singular Class
+
+Since we are doing binary classification, there is no need for the output to be two classes, we can just merge it into one class.
+
+
+
+### Removing Stop Words
+
+```
+Epoch [5/25], Loss: 0.7025, Train Acc: 0.5725, Test Acc: 0.6154
+Epoch [10/25], Loss: 0.6257, Train Acc: 0.6518, Test Acc: 0.6231
+Epoch [15/25], Loss: 0.5229, Train Acc: 0.6905, Test Acc: 0.6000
+Epoch [20/25], Loss: 0.7097, Train Acc: 0.7079, Test Acc: 0.6077
+Epoch [25/25], Loss: 0.5669, Train Acc: 0.7427, Test Acc: 0.6077
+```
+
+![](project_files/figure-html/cell-36-output-2.png)
+
+### Removing Specific Words (remix, cramers lightning round)
+
+```
+Epoch [5/25], Loss: 0.6566, Train Acc: 0.5725, Test Acc: 0.5385
+Epoch [10/25], Loss: 0.6646, Train Acc: 0.5977, Test Acc: 0.5692
+Epoch [15/25], Loss: 0.6579, Train Acc: 0.6170, Test Acc: 0.5615
+Epoch [20/25], Loss: 0.7210, Train Acc: 0.6480, Test Acc: 0.5692
+Epoch [25/25], Loss: 0.5859, Train Acc: 0.7292, Test Acc: 0.5462
+```
+
+![](project_files/figure-html/cell-39-output-2.png)
+
+### Increasing number of heads
+
+
+```
+Epoch [5/25], Loss: 0.6907, Train Acc: 0.5706, Test Acc: 0.5538
+Epoch [10/25], Loss: 0.7336, Train Acc: 0.6499, Test Acc: 0.5077
+Epoch [15/25], Loss: 0.7047, Train Acc: 0.7060, Test Acc: 0.5385
+Epoch [20/25], Loss: 0.5875, Train Acc: 0.7776, Test Acc: 0.5077
+Epoch [25/25], Loss: 0.6778, Train Acc: 0.8472, Test Acc: 0.4769
+```
+
+![](project_files/figure-html/cell-41-output-2.png)
+
+#### Increasing Number of Heads with LR Decay
+
+
+```
+Epoch [5/25], Loss: 0.6720, Train Acc: 0.6054, Test Acc: 0.4923
+Epoch [10/25], Loss: 0.6274, Train Acc: 0.6190, Test Acc: 0.5231
+Epoch [15/25], Loss: 0.7014, Train Acc: 0.6402, Test Acc: 0.5000
+Epoch [20/25], Loss: 0.6835, Train Acc: 0.6422, Test Acc: 0.5077
+Epoch [25/25], Loss: 0.5104, Train Acc: 0.6499, Test Acc: 0.5077
+```
+
+![](project_files/figure-html/cell-43-output-2.png)
+
+### Conclusion and Best Model
+
+Our best results happened to be 60% accuracy when we removed stop words. Usually for context analysis, we should not remove stop words, but it maybe that stop words in news headlines are uninformative compared with other words.
+
+```
+Total Samples: 517. Correct: 273, True Positive: 238, True Negative: 35. False Positive: 194, False Negative: 50.
+```
+
+Our model did relatively well on predicting, with very few false negatives, which we can take advantage of it.
 
 ## Results
 
@@ -60,6 +307,28 @@ Looking ahead, integrating advanced techniques like LSTMs for time-series analys
 ## Conclusion
 
 
+## Quantitative Trading Strategy
+
+Before we make our strategy, lets visualize how our model performs on the training dataset.
+
+![](project_files/figure-html/cell-45-output-1.png)
+
+From the graph above, we know that most of the time our model is predicting `true`. We can utilize it because from our previous section, we know that our model has very few false negatives, so we can be certain that most of the times the model is able to predict upcoming downfalls of the index. So we can make our strategy as the following:
+
+- Hold until model predicts bear market
+- When we detect bears, sell 80% and do a short with the revenue for 3 days
+
+Now we try to simulate it on the test dataset. We are using [Vanguard’s S&P500 ETF (VOO)](https://investor.vanguard.com/investment-products/etfs/profile/voo#overview) as our target since ETFs reflects the asset with very short lags, which is enough as we are not doing high-frequency trading.
+
+
+At last we deploy our strategy and compare it with a base strategy of holding the ETF for the entry time.
+
+![](project_files/figure-html/cell-48-output-2.png)
+
+At last we can see our portfolio surpassed the base strategy significantly. We got 10% gross profit within 6 months, which our base strategy was hard to maintain itself.
+
+
+
 ## Statement of Collaboration
 - **Xueyan Shi**:
 
@@ -76,6 +345,8 @@ Looking ahead, integrating advanced techniques like LSTMs for time-series analys
 - **Kliment Ho**:
 
 - **Qianjin Zhou**:
+
+Worked on EDA and generated deadline distribution graphs. Preprocessed the data through cleaning headline text. Developed the baseline model: Logistic Regression with TF-IDF on joint headlines. (grouping entries by date and concatenated all the headlines for each day into a single string to improve TF-IDF predictive power). Contributed to final report.
 
 We collaboratively discussed the project topic and model approaches. Regularly reviewed and compared model results as a team to identify areas for improvement and achieve better performance.
 
