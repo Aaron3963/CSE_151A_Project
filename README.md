@@ -60,3 +60,35 @@ Normalization or standardization will be applied to handle the scale differences
 ![k_line](dataset/graph/k_line.png)
 
 The graph of S&P 500 prices over the project period highlights a significant dip in early 2020, driven by the onset of the COVID-19 pandemic. This event likely influenced the predictive power of news headlines, as the pandemic triggered global market uncertainty and panic. While COVID-related news may dominate the model’s attention, it could skew the embeddings of other words due to its overwhelming impact during this period.
+
+## Methods
+
+## Results
+
+## Discussion
+
+This project explored predicting the S&P 500's daily movements using machine learning on news headlines and trading data. The process revealed valuable insights and challenges that shaped our understanding.
+
+Initially, we believed news sentiment combined with market data would be a strong predictor. Early efforts, like the TFIDF-based model, set a baseline but highlighted the limitations of simple feature extraction. The Transformer classifier offered modest improvements, achieving a 59.2% test accuracy after tuning. However, the gains were incremental, suggesting the model struggled with the high noise and complexity inherent in financial data.
+
+One major challenge was the dataset itself. Stock movements depend on a mix of news, macroeconomic factors, and investor behavior, making it difficult for any single model to perform well. Additionally, the binary classification approach, while straightforward, may have oversimplified the problem. A regression model could provide more nuanced predictions, reflecting the continuous nature of market changes.
+
+Our results are moderately believable—they outperform random guessing but remain far from reliable for decision-making. This reflects both the unpredictable nature of financial markets and the limitations of current modeling approaches.
+
+Looking ahead, integrating advanced techniques like LSTMs for time-series analysis or BERT for sentiment-focused tasks could improve outcomes. Rethinking the problem framework, such as combining classification with regression or using ensemble methods, might also better capture the complexity of the task.
+
+## Conclusion
+
+
+## Statement of Collaboration
+Xueyan Shi
+
+Satvik Sriram
+
+Sunan Xu
+
+Kelly Gong
+
+Kliment Ho
+
+Qianjin Zhou
