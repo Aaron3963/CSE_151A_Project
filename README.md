@@ -181,7 +181,7 @@ Report on test dataset:
 
 We also experimented in the amount of features TF-IDF should have in order to have the best performance.
 
-![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-31-output-3.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-31-output-3.png)
+![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-24-output-1.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-24-output-1.png)
 
 As expected, we do not need to high complexity for TF-IDF, as increasing it will overfit our training dataset. A complexity around 800 yields the best result on the test set with accuracy about 55%.
 
@@ -383,7 +383,14 @@ Another that we plan to look into are LSTMs. These types of models perform in bo
 
 - **Kliment Ho**:
 
-- **Qianjin Zhou**: Worked on EDA and generated headline distribution graphs. Contributed to data preprocessed by cleaning headline text. Developed and fine-tuned the joint headlines baseline model with Logistic Regression with TF-IDF (grouping entries by date and concatenated all the headlines for each day into a single string to improve TF-IDF predictive power). Also contributed to final report writeup and wrote the results section.
+- **Qianjin Zhou**: 
+  - Worked on EDA and generated headline distribution graphs
+  - Contributed to data preprocessed by cleaning headline text
+  - Developed and fine-tuned the joint headlines baseline model with Logistic Regression with TF-IDF
+  - Contributed to final report writeup and wrote the results section
+  - Helped maintaining project notebook rendered on github pages
+  
+
 
 We collaboratively discussed the project topic and model approaches. Regularly reviewed and compared model results as a team to identify areas for improvement and achieve better performance.
 
