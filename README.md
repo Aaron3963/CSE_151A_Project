@@ -286,7 +286,9 @@ Epoch [25/25], Loss: 0.5104, Train Acc: 0.6499, Test Acc: 0.5077
 Our best results happened to be 60% accuracy when we removed stop words. Usually for context analysis, we should not remove stop words, but it maybe that stop words in news headlines are uninformative compared with other words.
 
 ```
-Total Samples: 517. Correct: 273, True Positive: 238, True Negative: 35. False Positive: 194, False Negative: 50.
+Total Samples: 517.
+Correct: 273, True Positive: 238, True Negative: 35. 
+False Positive: 194, False Negative: 50.
 ```
 
 Our model did relatively well on predicting, with very few false negatives, which we can take advantage of it.
@@ -318,43 +320,41 @@ Overall, while some models outperformed random guessing, the relatively modest a
 
 
 ## Discussion
-
-This project explored predicting the S&P 500's daily movements using machine learning on news headlines and trading data. The process revealed valuable insights and challenges that shaped our understanding.
-
-Initially, we believed news sentiment combined with market data would be a strong predictor. Early efforts, like the TFIDF-based model, set a baseline but highlighted the limitations of simple feature extraction. The Transformer classifier offered modest improvements, achieving a 59.2% test accuracy after tuning. However, the gains were incremental, suggesting the model struggled with the high noise and complexity inherent in financial data.
-
-One major challenge was the dataset itself. Stock movements depend on a mix of news, macroeconomic factors, and investor behavior, making it difficult for any single model to perform well. Additionally, the binary classification approach, while straightforward, may have oversimplified the problem. A regression model could provide more nuanced predictions, reflecting the continuous nature of market changes.
-
-Our results are moderately believable—they outperform random guessing but remain far from reliable for decision-making. This reflects both the unpredictable nature of financial markets and the limitations of current modeling approaches.
-
-Looking ahead, integrating advanced techniques like LSTMs for time-series analysis or BERT for sentiment-focused tasks could improve outcomes. Rethinking the problem framework, such as combining classification with regression or using ensemble methods, might also better capture the complexity of the task.
-
-## Conclusion
-
-
 ### Quantitative Trading Strategy
 
-Before we make our strategy, lets visualize how our model performs on the training dataset.
+Before we make our strategy, lets visualize how our best model (Transformer with stop words removed) performs on the training dataset.
 
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-45-output-1.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-45-output-1.png)
 
-From the graph above, we know that most of the time our model is predicting `true`. We can utilize it because from our previous section, we know that our model has very few false negatives, so we can be certain that most of the times the model is able to predict upcoming downfalls of the index. So we can make our strategy as the following:
+From the graph above, we know that most of the time our model is predicting `True`. We can utilize it because from our previous section, we know that our model has very few false negatives, so we can be certain that most of the times the model is able to predict upcoming downfalls of the index. So we can make our strategy as the following:
 
 - Hold until model predicts bear market
-- When we detect bears, sell 80% and do a short with the revenue for 3 days
+- When we detect bears, sell `80%` and do a short with the revenue for 3 days
 
-Now we try to simulate it on the test dataset. We are using [Vanguard’s S&P500 ETF (VOO)](https://investor.vanguard.com/investment-products/etfs/profile/voo#overview) as our target since ETFs reflects the asset with very short lags, which is enough as we are not doing high-frequency trading.
+We simulated our strategy on the test dataset. We used [Vanguard’s S&P500 ETF (VOO)](https://investor.vanguard.com/investment-products/etfs/profile/voo#overview) as our target since ETFs reflects the asset with very short lags, which is enough as we are not doing high-frequency trading.
 
 
-At last we deploy our strategy and compare it with a base strategy of holding the ETF for the entry time.
-
-Portfolio is 111.7785% after half a year.  
-Long holding is 97.8522% after half a year.  
+We deploy our strategy and compare it with a base strategy of holding the ETF for the entry time. And the results are the following:
+ - Portfolio is `111.7785%` after half a year.  
+ - Long holding is `97.8522%` after half a year.  
 
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-48-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-48-output-2.png)
 
-At last we can see our portfolio surpassed the base strategy significantly. We got 10% gross profit within 6 months, which our base strategy was hard to maintain itself.
+The conclusion is that our portfolio with this quant strategy surpassed the base strategy significantly. We got 10% gross profit within 6 months, which our base strategy was hard to maintain itself. 
 
+### Summary
+
+Initially, we believed news sentiment combined with market data would be a strong predictor. Early efforts, like the TF-IDF-based model, set a baseline but highlighted the limitations of simple feature extraction. The Transformer classifier offered modest improvements, achieving a `61.5%` test accuracy after tuning. However, the gains were incremental, suggesting the model struggled with the high noise and complexity inherent in financial data.
+
+One major challenge was the dataset itself. Stock movements depend on a mix of news, macroeconomic factors, and investor behavior, making it difficult for any single model to perform well. Additionally, the binary classification approach may have oversimplified the problem. A regression model could provide more nuanced predictions, reflecting the continuous nature of market changes.
+
+Our results are moderately believable—they outperform random guessing but remain far from reliable for decision-making. This reflects both the unpredictable nature of financial markets and the limitations of current modeling approaches.
+
+## Conclusion
+Overall our second model performed worse than our expectations. Although it beat out the first model, it was very marginal compared to the hyperparameter tuning that was done. Some improvements that can be done to this model is to possibly create and ensemble with a time series model and transform the problem into a regression problem. We believe that there is a lot of noise in the data to do a simple classification, so reworking the problem may utilize the model the best. These changes could improve the model; however, we believe that the improvements would be limited due to the nature of the model and the data itself.
+
+Future Models
+Another that we plan to look into are LSTMs. These types of models perform in both NLP tasks and time series tasks. Since our problem is heavily dependent on those two things, LSTMs could be the perfect model. We have also already began working with BERT because it is bidirectional and it is specifically built for sentiment analysis. We believe that the combination of these facts along with attention can boost the accuracy on this dataset.
 
 
 ## Statement of Collaboration
@@ -381,22 +381,3 @@ At last we can see our portfolio surpassed the base strategy significantly. We g
 
 We collaboratively discussed the project topic and model approaches. Regularly reviewed and compared model results as a team to identify areas for improvement and achieve better performance.
 
---
-## Milestone 4: Second Model + more
-
-### Transformer Classifier
-Generally throughout the different iterations of our Transformer model, we found that it finished fitting within the first 10 epochs. This could most likely be occuring do to our large batch sizes and how big the data is. Our best Transformer model is one where we implemented the following improvements: we did hyperparameter tuning to find the ideal number of heads, layers, etc, change the number of outputs in the final layer of the Transformer model from 2 to 1, and had no learning rate decay. This model obtained a test accuracy of 59.2% and a train accuracy of 69.8%. Although this is better than our first model, TFIDF, we feel that there is still room for improvement with other models.
-
-**Note:** Please see the end of our [Project Notebook](project.ipynb) to see the final model's fitting graph, train vs. test error, and predictive stats on the test data.
-
-### Conclusion
-Overall our second model performed worse than our expectations. Althrough it beat out the first model, it was very marginal compared to the hyperparameter tuning that was done. Some improvements that can be done to this model is to possibly create and ensemble with a time series model and transform the problem into a regression problem. We believe that there is a lot of noise in the data to do a simple classification, so reworking the problem may utilize the model the best. These changes could improve the model; however, we believe that the improvements would be limited due to the nature of the model and the data itself. 
-
-### Future Models
-Another that we plan to look into are LSTMs. These types of models perform in both NLP tasks and time series tasks. Since our problem is heavily dependent on those two things, LSTMs could be the perfect model.
-We have also already began working with BERT because it is bidirectional and it is specifically built for sentiment analysis. We believe that the combination of these facts along with attention can boost the accuracy on this dataset. 
-
-**Things we did:**
-New grouped dataset for the Transformer Classifier. [View Dataset](grouped_dataset.csv)
-
-Transformer Classifier Model. [View Model](project.ipynb) (Under the Transformer Classifier header)
