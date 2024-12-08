@@ -189,12 +189,6 @@ As expected, we do not need to high complexity for TF-IDF, as increasing it will
 
 We will be using our joined dataset which concatenate all news in the same day to one line. The main reason for this is because if we use single data news data points, there will be too much noise in our dataset, and the model cannot learn any features. Notice that `shuffle` is set to `False` in our split. This is because the stock and news data are all time-series, which we cannot inform our model about the future.
 
-Code
-
-```
-data = pd.read_csv("./dataset/grouped_dataset.csv")
-train_dataset, test_dataset = train_test_split(data, test_size=0.2, shuffle=False, random_state=SEED)
-```
 
 ##### Preparation
 
