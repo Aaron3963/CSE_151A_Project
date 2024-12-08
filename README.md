@@ -1,6 +1,6 @@
-# CSE 151A Project Report
 # The Impact of News on Stock Market Predictions: Analyzing and predicting S&P 500 with News Headlines
-
+## Before reading further
+Our project is [**hosted live here**](https://aaron3963.github.io/CSE_151A_Project/), which integrated all the `README` info into our project note book. It is guaranteed a better reading experience there!
 ## Introduction
 Stock trading, as a critical component of the modern economic framework, profoundly impacts almost every aspect of our daily lives. The stock market itself serves as a vital barometer of economic trends, 
 reflecting the trajectories of companies, regions, nations, and even the global economy. Stock prices fluctuate every second, with international news often playing a significant role in these changes. 
@@ -359,6 +359,11 @@ At last we can see our portfolio surpassed the base strategy significantly. We g
 
 ## Statement of Collaboration
 - **Xueyan Shi**:
+  - Tokenizing news headlines
+  - Developed the custom transformer model
+  - Made the quantitative trading strategy
+  - Hosted project notebook on github pages and rendered it using Quarto
+  - Data cleaning and pre-processing, also helped with graphs and visualizations
 
 - **Satvik Sriram**:
 
