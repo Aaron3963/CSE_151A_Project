@@ -218,7 +218,7 @@ Epoch [25/25], Loss: 0.3440, Train Acc: 0.9923, Test Acc: 0.5385
 
 As we can tell, the test accuracy is around 50%, which means the model did not learn anything useful and ended up guessing randomly. We are not using a model which does nothing more than just coin-flipping, so we did more hyperparameter tunning.
 
-### Changing to Singular Class
+##### Changing to Singular Class
 
 Since we are doing binary classification, there is no need for the output to be two classes, we can just merge it into one class.
 
@@ -232,7 +232,7 @@ Epoch [25/25], Loss: 0.6474, Train Acc: 0.8162, Test Acc: 0.5231
 
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-33-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-33-output-2.png)
 
-### Removing Stop Words
+##### Removing Stop Words
 
 ```
 Epoch [5/25], Loss: 0.7025, Train Acc: 0.5725, Test Acc: 0.6154
@@ -243,7 +243,7 @@ Epoch [25/25], Loss: 0.5669, Train Acc: 0.7427, Test Acc: 0.6077
 ```
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-36-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-36-output-2.png)
 
-### Removing Specific Words (remix, cramers lightning round)
+##### Removing Specific Words (remix, cramers lightning round)
 
 ```
 Epoch [5/25], Loss: 0.6566, Train Acc: 0.5725, Test Acc: 0.5385
@@ -255,7 +255,7 @@ Epoch [25/25], Loss: 0.5859, Train Acc: 0.7292, Test Acc: 0.5462
 
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-39-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-39-output-2.png)
 
-### Increasing number of heads
+##### Increasing number of heads
 
 
 ```
@@ -268,7 +268,7 @@ Epoch [25/25], Loss: 0.6778, Train Acc: 0.8472, Test Acc: 0.4769
 
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-41-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-41-output-2.png)
 
-#### Increasing Number of Heads with LR Decay
+##### Increasing Number of Heads with LR Decay
 
 
 ```
@@ -281,7 +281,7 @@ Epoch [25/25], Loss: 0.5104, Train Acc: 0.6499, Test Acc: 0.5077
 
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-43-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-43-output-2.png)
 
-### Conclusion and Best Model
+#### Conclusion and Best Model
 
 Our best results happened to be 60% accuracy when we removed stop words. Usually for context analysis, we should not remove stop words, but it maybe that stop words in news headlines are uninformative compared with other words.
 
@@ -332,7 +332,7 @@ Looking ahead, integrating advanced techniques like LSTMs for time-series analys
 ## Conclusion
 
 
-## Quantitative Trading Strategy
+### Quantitative Trading Strategy
 
 Before we make our strategy, lets visualize how our model performs on the training dataset.
 
