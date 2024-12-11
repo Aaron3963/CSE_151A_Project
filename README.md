@@ -366,10 +366,14 @@ Another that we plan to look into are LSTMs. These types of models perform in bo
   - Data cleaning and pre-processing, also helped with graphs and visualizations
 
 - **Satvik Sriram**:
+  - Analyzed graphs from EDA to give direction in preprocessing
+  - Co-developed custom transformer model
+  - Fine-tuned transformer in terms of extra preprocessing, using stop words
+  - Created conclusions and analysis for milestone 3 and 4
 
 - **Sunan Xu**:
-  - Analyzed the word distribution and their siginificance in the hdeadlines of news data, 
-  - Converted the data to and save them to do the further analysis.  
+  - Analyzed the word distribution and their significance in the headlines of news data, 
+  - Converted the data to and save them to do further analysis.  
   - Helped to built the LSTM model for Model 2, performed hyperparameter tuning, and compared it with the Transformer classifier.
   - Compiled the documentation and drafted the final report.
 
@@ -392,7 +396,7 @@ Another that we plan to look into are LSTMs. These types of models perform in bo
   - Contributed to data preprocessed by cleaning headline text
   - Developed and fine-tuned the joint headlines baseline model with Logistic Regression with TF-IDF
   - Contributed to final report writeup and wrote the results section
-  - Helped maintaining project notebook rendered on github pages
+  - Helped maintain project notebook rendered on github pages
   
 
 
