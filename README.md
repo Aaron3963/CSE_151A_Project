@@ -382,6 +382,10 @@ Another that we plan to look into are LSTMs. These types of models perform in bo
   - Compiled the documentation and drafted the final report.
 
 - **Kliment Ho**:
+    - Pre-processing and aided in data cleaning
+    - Wrangled data and finding interesting aggregates such as the relationship between pronoun tokens and news headlines.
+    - Experimented with multiple models with SVM, Random Forest, Gradient Boosting, and implementing BERT transformer
+    - Fine-tuned model and tweaked visuals for S&P 500 and News Headlines.
 
 - **Qianjin Zhou**: 
   - Worked on EDA and generated headline distribution graphs
