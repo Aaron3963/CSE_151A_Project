@@ -8,7 +8,7 @@
 
 <meta name="author" content="Xueyan Shi, Satvik Sriram, Sunan Xu, Kelly Gong, Kliment Ho, Qianjin Zhou">
 
-<title>CSE 151A Project</title>
+<title>The Impact of News on Stock Market Predictions: Analyzing and Predicting S&amp;P 500 with News Headlines</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -109,7 +109,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">CSE 151A Project</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li></ul></div></div>
+<div class="quarto-title-block"><div><h1 class="title">The Impact of News on Stock Market Predictions: Analyzing and Predicting S&amp;P 500 with News Headlines</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li></ul></div></div>
 </div>
 
 
@@ -1495,6 +1495,7 @@ Epoch [25/25], Loss: 0.6474, Train Acc: 0.8162, Test Acc: 0.5231</code></pre>
 </section>
 <section id="removing-stop-words" class="level4">
 <h4 class="anchored" data-anchor-id="removing-stop-words">Removing Stop Words</h4>
+<p>During our data analysis, we discovered that the most frequent words in the headlines are just stop words. Though they may serve a purpose in long paragraphs, we think it may be uninformative in compact sentences like headlines. So we removed them through <code>WordListCorpusReader</code> from <code>nltk</code>.</p>
 <div id="cell-81" class="cell" data-execution_count="59">
 <details class="code-fold">
 <summary>Code</summary>
@@ -1584,6 +1585,7 @@ Epoch [25/25], Loss: 0.5669, Train Acc: 0.7427, Test Acc: 0.6077</code></pre>
 </section>
 <section id="removing-specific-words-remix-cramers-lightning-round" class="level4">
 <h4 class="anchored" data-anchor-id="removing-specific-words-remix-cramers-lightning-round">Removing Specific Words (remix, cramers lightning round)</h4>
+<p>Though we removed most of the words directly related with Mr.&nbsp;Cramers, there are still relavent words in the <code>CNBC</code> dataset. So we tried removing more words related with him.</p>
 <div id="cell-85" class="cell" data-execution_count="62">
 <details class="code-fold">
 <summary>Code</summary>
@@ -1673,6 +1675,7 @@ Epoch [25/25], Loss: 0.5859, Train Acc: 0.7292, Test Acc: 0.5462</code></pre>
 </section>
 <section id="increasing-number-of-heads" class="level4">
 <h4 class="anchored" data-anchor-id="increasing-number-of-heads">Increasing number of heads</h4>
+<p>Since our model is processing a long sequence of concatenated sentences, maybe increasing number of heads in our transformer could capture more relationships, and hopefully learn that there are different sources in the input.</p>
 <div id="cell-89" class="cell">
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>MAX_LENGTH <span class="op">=</span> <span class="dv">300</span></span>
 <span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>BATCH_SIZE <span class="op">=</span> <span class="dv">32</span></span>
@@ -1743,6 +1746,7 @@ Epoch [25/25], Loss: 0.6778, Train Acc: 0.8472, Test Acc: 0.4769</code></pre>
 </section>
 <section id="increasing-number-of-heads-with-lr-decay" class="level4">
 <h4 class="anchored" data-anchor-id="increasing-number-of-heads-with-lr-decay">Increasing Number of Heads with LR Decay</h4>
+<p>There was a significant over-fitting problem when we set <code>NUM_HEAD = 32</code>. To solve this issue, we introduced learning rate decay. It will decrease learning rate (<code>gamma=0.9</code>) after each epoch.</p>
 <div id="cell-92" class="cell" data-execution_count="41">
 <details class="code-fold">
 <summary>Code</summary>
@@ -1854,7 +1858,9 @@ Epoch [25/25], Loss: 0.5104, Train Acc: 0.6499, Test Acc: 0.5077</code></pre>
 <span id="cb53-30"><a href="#cb53-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Total Samples: </span><span class="sc">{</span>total_samples<span class="sc">}</span><span class="ss">. Correct: </span><span class="sc">{</span>correct<span class="sc">}</span><span class="ss">, True Positive: </span><span class="sc">{</span>TP<span class="sc">}</span><span class="ss">, True Negative: </span><span class="sc">{</span>TN<span class="sc">}</span><span class="ss">. False Positive: </span><span class="sc">{</span>FP<span class="sc">}</span><span class="ss">, False Negative: </span><span class="sc">{</span>FN<span class="sc">}</span><span class="ss">."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Total Samples: 517. Correct: 273, True Positive: 238, True Negative: 35. False Positive: 194, False Negative: 50.</code></pre>
+<pre><code>Total Samples: 517.
+Correct: 273, True Positive: 238, True Negative: 35.
+False Positive: 194, False Negative: 50.</code></pre>
 </div>
 </div>
 <p>Our model did relatively well on predicting, with very few false negatives, which we can take advantage of it.</p>
