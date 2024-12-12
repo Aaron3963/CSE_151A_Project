@@ -1,10 +1,10 @@
-# The Impact of News on Stock Market Predictions: Analyzing and predicting S&P 500 with News Headlines
+# The Impact of News on Stock Market Predictions: Analyzing and Predicting S&P 500 with News Headlines
 ## Before reading further
-Our project is [**hosted live here**](https://aaron3963.github.io/CSE_151A_Project/), which integrated all the `README` info into our project note book. It is guaranteed a better reading experience there!
+Our project is [**hosted live here**](https://aaron3963.github.io/CSE_151A_Project/), which integrated all the `README` info into our project notebook. It is guaranteed a better reading experience there!
 ## Introduction
 Stock trading, as a critical component of the modern economic framework, profoundly impacts almost every aspect of our daily lives. The stock market itself serves as a vital barometer of economic trends, 
 reflecting the trajectories of companies, regions, nations, and even the global economy. Stock prices fluctuate every second, with international news often playing a significant role in these changes. 
-In the past, people relied on newspapers the next day to access news, but today, information is transmitted instantaneously to electronic devices worldwide through the internet.
+In the past, people relied on newspapers to deliver information on which to base their stock decisions, but today, information is transmitted instantaneously via social media, online articles, and especially news stations.
 
 In this project, we aim to train a model capable of predicting the rise or fall of the S&P 500 index immediately upon receiving news headlines. 
 This tool can empower individuals to make more informed financial decisions, even if they lack expertise in the relevant industry or region covered by the news. 
@@ -26,7 +26,7 @@ The Timeframes of data:
 
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-4-output-1.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-4-output-1.png)
 
-We can see here that all of the news datasets have varying numbers of data points ranging from 2800 to 32700. This will not be a problem for us since our question focuses on the impact of news headlines in general on the S&P 500, so all of this data will be combined in to a larger dataset ordered by the date of the headline. We can also see there is null data within the CNBC dataset which will be removed.
+We can see here that all of the news datasets have varying numbers of data points ranging from 2800 to 32700. This will not be a problem for us since our question focuses on the impact of news headlines in general on the S&P 500, so all of this data will be combined in to a larger dataset ordered by the date of the headline. The difference between the number of headlines by CNBC and the other news stations is explained by the fact that much of the data is null.
 
 ##### Headline Length
 
@@ -38,11 +38,11 @@ These histograms display the number of headlines given a specific length. Analys
 
 To find out the distribution of headlines throughout the time frame, we generated a graph with headlines colored differently in each month of the year. 
 ![monthly](dataset/graph/monthly.png)
-These graphs depict the number of headlines per month per year. With this, we can see that the earlier months of the year seem to have a higher concentration of headlines.
+These graphs depict the number of headlines per month per year. With this, we can see that the earlier months of the year seem to have a higher concentration of headlines. Note that CNBC and Guardian data begins late December of 2018 to early 2019 compared to Reuters which begins in early 2018. While this won't cause any direct issues since all datasets will be combined, it must be noted that the 2018 data is dominated completely by a single news source which could be a source of bias. 
 
 ##### Word Frequency
 
-A short analysis on word frequency. We used the stopword dictionary in `nltk` to help filtering out words like `a` and `the`.
+A short analysis on word frequency. We used the stopword dictionary in `nltk` to help filter out words like `a` and `the`.
 
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-11-output-1.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-11-output-1.png)
 
@@ -50,11 +50,11 @@ A short analysis on word frequency. We used the stopword dictionary in `nltk` to
 
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-11-output-3.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-11-output-3.png)
 
-Most of the words are meaningful, but who is `cramer` in the CNBC dataset? Turns out [Jim Cramer](https://en.wikipedia.org/wiki/Jim_Cramer) is the host of various financial programs in CNBC. We will prune him out from the CNBC dataset later.
+Most of the words are meaningful, but who is `cramer` in the CNBC dataset? Turns out [Jim Cramer](https://en.wikipedia.org/wiki/Jim_Cramer) is the host of various financial programs on CNBC. We will prune him out from the CNBC dataset later.
 
 Further analysis identified the most frequently used words in the headlines. A histogram of word occurrences revealed notable terms such as fears, energy, government, 
 China, and shares, while common filler words (e.g., articles, prepositions, pronouns) were excluded from the visualization for clarity.
-A short analysis on word frequency. We used the stopword dictionary in nltk to help filtering out words like a and the.
+A short analysis of word frequency. We used the stopword dictionary in nltk to help filter out words like a and the.
 
 ![sig_word](dataset/graph/sig_word.png)
 
@@ -85,7 +85,7 @@ To prepare for analysis, normalization or standardization may be beneficial to h
 
 ![k_line](dataset/graph/k_line.png)
 
-This is the stock price of the S&P 500 over min and max dates covered by the news headlines. Some noticeable features that are included in this graph is the large dip during early 2020 caused by covid. This will have an interesting impact on our model since the news did play a big role in the scare factor for COVID-19, but the fact that it was caused by a global epidemic may skew the embeddings of other words.
+This is the stock price of the S&P 500 over min and max dates covered by the news headlines. One noticeable feature that is included in this graph is the large dip during early 2020 caused by COVID-19. This will have an interesting impact on our model since the news did play a big role in the scare factor for COVID-19, but the fact that it was caused by a global epidemic may skew the embeddings of other words.
 
 ### Data Preprocessing
 
@@ -93,7 +93,7 @@ Clean out `NaT` values in `Time` column of three datasets.
 
 #### Cleaning Text
 
-Here we did our first cleaning by converting all characters to lower case, and remove extra spaces, quotation marks and other unwanted ones. We are also removing `Jim Cramer`, as well as his show `Mad Money` from the CNBC dataset.
+Here we did our first cleaning by converting all characters to lowercase and removing extra spaces, quotation marks, and other unwanted ones. We are also removing `Jim Cramer`, as well as his show `Mad Money` from the CNBC dataset.
 
 |  | Headlines | Time | Description |
 | --- | --- | --- | --- |
@@ -105,7 +105,7 @@ Here we did our first cleaning by converting all characters to lower case, and r
 
 #### Add Prediction Target
 
-Since our goal is to relate news outlets with S&P500, part of our project will be focusing on the trend prediction of future S&P 500 price change. Which we created a binary column `trend_up` which will be `True` if the price current trading date is lower than tomorrow’s.
+Since our goal is to relate news outlets with S&P 500, part of our project will be focusing on the trend prediction of future S&P 500 price change. Which we created a binary column `trend_up` which will be `True` if the price current trading date is lower than tomorrow’s.
 
 |  | Date | Close | trend\_up |
 | --- | --- | --- | --- |
@@ -115,17 +115,17 @@ Since our goal is to relate news outlets with S&P500, part of our project will b
 | 3 | 2017-12-06 | 2629.270020 | True |
 | 4 | 2017-12-07 | 2636.979980 | True |
 
-We also want to make sure that the proportion `True` and `False` are balanced.
+We also want to ensure that the proportions `True` and `False` are balanced.
 
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-18-output-1.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-18-output-1.png)
 
 #### Set Time Granularity
 
-Though some of the datasets has timestamp with minute-wise precisions, we only want to research on a daily basis.
+Though some of the datasets have timestamps with minute-wise precisions, we only want to research on a daily basis.
 
 #### Concatenate 3 New Datasets
 
-For our first model, we will ignore temporal relationship by treating every news as an independent datapoint. We merged all datasets into one, along with the prediction target.
+For our first model, we will ignore temporal relationships by treating every piece of news as an independent data point. We merged all datasets into one, along with the prediction target.
 
 |  | Headlines | Description | Date | Close | trend\_up | Source |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -141,7 +141,7 @@ We are using logistic regression with TF-IDF features as our base model.
 
 #### Individual Headline Model
 
-For this model, we are treating every news are individual data points. This is guarantee to fail because there is way to little information contained in a single news title, and there will be too much noise.
+For this model, we are treating every news item as individual data points. This is guarantee to fail because there is way to little information contained in a single news title, and there will be too much noise.
 
 Test Accuracy: 0.5147572199301809  
 Train Accuracy: 0.5766158891357241  
@@ -157,7 +157,7 @@ Report on test dataset:
 
 #### Joint Headline Model
 
-By joining all headlines of the same day in to one sentence, we hope that TF-IDF could capture more information than our previous model.
+By joining all headlines of the same day into one sentence, we hope that TF-IDF could capture more information than our previous model.
 
 |  | Date | Headlines | trend\_up |
 | --- | --- | --- | --- |
@@ -179,20 +179,20 @@ Report on test dataset:
 | macro avg | 0.444892 | 0.490147 | 0.382000 | 130.000000 |
 | weighted avg | 0.458623 | 0.546154 | 0.421201 | 130.000000 |
 
-We also experimented in the amount of features TF-IDF should have in order to have the best performance.
+We also experimented with the amount of features that TF-IDF should have to achieve the best performance.
 
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-24-output-1.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-24-output-1.png)
 
-As expected, we do not need to high complexity for TF-IDF, as increasing it will overfit our training dataset. A complexity around 800 yields the best result on the test set with accuracy about 55%.
+As expected, we do not need too high complexity for TF-IDF, as increasing it will overfit our training dataset. A complexity of around 800 yields the best result on the test set with an accuracy of about 55%.
 
 ### Transformer Model[](https://aaron3963.github.io/CSE_151A_Project/#transformer-model)
 
-We will be using our joined dataset which concatenate all news in the same day to one line. The main reason for this is because if we use single data news data points, there will be too much noise in our dataset, and the model cannot learn any features. Notice that `shuffle` is set to `False` in our split. This is because the stock and news data are all time-series, which we cannot inform our model about the future.
+We will be using our joined dataset which concatenates all news on the same day to one line. The main reason for this is that if we use single data news data points, there will be too much noise in our dataset, and the model cannot learn any features. Notice that `shuffle` is set to `False` in our split. This is because the stock and news data are all time-series, which we cannot inform our model about the future.
 
 
 #### Preparation
 
-We used a tokenizer from HuggingFace, which give unique tokens to every word.
+We used a tokenizer from HuggingFace, which gives unique tokens to every word.
 
 The `Dataset` class to create PyTorch’s data loader.
 
@@ -203,9 +203,17 @@ Below are some helper methods for calculating evaluation metrics and graphs.
 
 
 #### Base Classifier Transformer Model
-
 To start, we are using the following hyperparameters.
-
+```
+MAX_LENGTH = 600
+BATCH_SIZE = 16
+EMBED_DIM = 128
+NUM_HEAD = 4
+NUM_LAYER = 6
+NUM_OUTPUT = 2
+EPOCHS = 25
+LEARNING_RATE = 1e-4
+```
 ```
 Epoch [5/25], Loss: 0.6124, Train Acc: 0.6615, Test Acc: 0.5000
 Epoch [10/25], Loss: 0.5535, Train Acc: 0.5919, Test Acc: 0.5615
@@ -216,7 +224,7 @@ Epoch [25/25], Loss: 0.3440, Train Acc: 0.9923, Test Acc: 0.5385
 
 ![](project_files/figure-html/cell-31-output-3.png)
 
-As we can tell, the test accuracy is around 50%, which means the model did not learn anything useful and ended up guessing randomly. We are not using a model which does nothing more than just coin-flipping, so we did more hyperparameter tunning.
+As we can tell, the test accuracy is around 50%, which means the model did not learn anything useful and ended up guessing randomly. We are not using a model that does nothing more than just coin-flipping, so we did more hyperparameter tunning.
 
 #### Changing to Singular Class
 
@@ -256,7 +264,17 @@ Epoch [25/25], Loss: 0.5859, Train Acc: 0.7292, Test Acc: 0.5462
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-39-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-39-output-2.png)
 
 #### Increasing number of heads
-
+These are the new hyperparameters compared to the base model:
+```
+MAX_LENGTH = 300
+BATCH_SIZE = 32
+EMBED_DIM = 256
+NUM_HEAD = 16
+NUM_LAYER = 4
+NUM_OUTPUT = 1
+EPOCHS = 25
+LEARNING_RATE = 1e-5
+```
 
 ```
 Epoch [5/25], Loss: 0.6907, Train Acc: 0.5706, Test Acc: 0.5538
@@ -283,7 +301,7 @@ Epoch [25/25], Loss: 0.5104, Train Acc: 0.6499, Test Acc: 0.5077
 
 #### Conclusion and Best Model
 
-Our best results happened to be 60% accuracy when we removed stop words. Usually for context analysis, we should not remove stop words, but it maybe that stop words in news headlines are uninformative compared with other words.
+Our best results happened to be 60% accuracy when we removed stop words. Usually, for context analysis, we should not remove stop words, but it may be that stop words in news headlines are uninformative compared with other words.
 
 ```
 Total Samples: 517.
@@ -320,13 +338,30 @@ Overall, while some models outperformed random guessing, the relatively modest a
 
 
 ## Discussion
+### Model Progression
+During this discussion, we will consider 55.7% as the barrier between a model learning or underfitting since this is the accuracy the model can obtain by returning true no matter the input data. 
+
+#### Logistic Regression
+We started with this model to serve as a simple base model to compare to. The reason is that both logistic regression and TF-IDF serve as a basic methodology within classification problems and NLP respectively. TF-IDF is an effective strategy within recommender systems since it searches for occurrences; however, it does not perform well when given news headline data. A reason for this can be attributed to TF-IDF being a static model having no sense of temporal data which, in this case, is highly important. Not only that, but these types of models are not learning the sentiment of words which is a key pain point for specifically news headlines since they are crafted to take advantage of word sentiment. Although both iterations of the base model perform below the 55.7% barrier signifiying underfitting, it is important to note that the combined headlines resulted in better accuracies due to the increase in word data per entry. This combined dataset is what is used going forward in future models. 
+
+#### Transformer
+The transformer model was chosen as the main second model because of the two glaring weaknesses seen by the TF-IDF models: temporal context and learning word sentiment. By using attention and positional embeddings, transformers are able to view a collection of words as a sentence with order and create weights that reflect the sentiment of the word based on how it was used in the sentence. These reasons were the driving motivation behind using the transformer model and its following iterations.
+
+The base transformer model has a higher train accuracy but a lower test accuracy than than the training models. This indicates that the model is both under and overfitting to the data and performs much worse than the 55.7% barrier. To combat specifically the underfitting in the test data, we simplified the number of output classes to just one. Since we are doing binary classification, there is no need for the output to be two classes, so we can merge it into one class. This marginally improved our test accuracy but caused the overfitting in the train data to worsen. 
+
+For the next set of iterations, our main goal was to counter underfitting, but the issue of overfitting was still being considered. For context in this iteration, transformers have a major problem with dealing with noise since the sentiment of a word is impacted by all the words that preceded it. It is difficult to completely find and weed out all noise from a dataset but one large step that we took was the removal of stop words. Stop words in NLP are words that generally contain no semantic information like "a", "an", "the", "he", etc. Removing these words helps the model focus on the words that do contain semantic information and prevent their weights from being diluted. The performance of this model completely overshadowed the previous transformer and base models with a test accuracy of 61.5% and it even addressed the overfitting issue in the training data bringing the accuracy down to 74.3%. Following the same thought process, we found the word "remix", left over from a previous preprocessing step, and "cramers lightning round" that was missed while removing "cramer". After the removal of these phrases, we actually see a decrease in performance within the model in both the test and train data. Our explanation of this centers around Jim Cramer. Cramer's lightning round is a segment on CNBC's Mad Money, where Jim Cramer rapidly answers viewers' questions about stocks. While the name of the show itself may not hold any semantic meaning, which was the reason for removal, in reality, it could be very impactful in reassuring consumer attitudes about the market. Therefore a possible correlation is that when this segment is aired consumers feel better about investing in the market which in turn increases the likelihood of the market going up for the next day.
+
+The final set of transformer iterations focuses on ensuring that the model is learning the sentiment information of the words. Since the models were not able to generalize the sentiment information in the training data to the testing data, we experimented with the addition of heads within the self-attention layers. While it did boost the accuracy of the training data, it was still unable to generalize the information it gained from training to the testing data. During this process, we found that the testing accuracy was highly volatile. To combat this, we added a decay on the learning rate so that once the model found a minima, it could stay there rather than completely blow up. Compared to the transformer model with more heads, it was able to both counter the underfitting and overfitting problem slightly; however, now the model performs similarly to the base model with no improvements. It could be the case that the increase and heads and LR decay are counteracting each other such that it results in essentially the base model, but more testing must be done to report a conclusive explanation.   
+
+Overall, the issue of whether a model was learning was a large problem. For all models, except the transformer with stop word removal, we believe that they were not learning. This is due to a combination of factors that were already explained like incompatibility with the data, noise within the data, and more that we are not aware of. Considering that these models were either below or very close to the 55.7% threshold, it's hard to argue that the model was able to learn anything. However, the transformer with stop word removal was able to clear this barrier by 5%. Although this may not seem like a large increase, it must be put in the context of the problem. The stock market is highly volatile, those who attempt to generate money off of it look at information from a plethora of sources. News headlines, company performance, consumer attitude, the current political climate, and much more are all factors that guide investors in making their decisions. Considering the transformer model with stop word removal was able to beat the 55.7% threshold by 5%, is a strong indicator of learning, but specifically in the negative context. Looking at the graph presented in the next section, we see that this model does make the "true" prediction in most cases, but the indication of the model learning is apparent when it was able to understand when to predict "false" to get that 5% difference. 
+
 ### Quantitative Trading Strategy
 
-Before we make our strategy, lets visualize how our best model (Transformer with stop words removed) performs on the training dataset.
+Before we make our strategy, let us visualize how our best model (Transformer with stop words removed) performs on the training dataset.
 
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-45-output-1.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-45-output-1.png)
 
-From the graph above, we know that most of the time our model is predicting `True`. We can utilize it because from our previous section, we know that our model has very few false negatives, so we can be certain that most of the times the model is able to predict upcoming downfalls of the index. So we can make our strategy as the following:
+From the graph above, we know that most of the time our model is predicting `True`. We can utilize it because, from our previous section, we know that our model has very few false negatives, so we can be certain that most of the time the model can predict upcoming downfalls of the index. So we can make our strategy as the following:
 
 - Hold until model predicts bear market
 - When we detect bears, sell `80%` and do a short with the revenue for 3 days
@@ -340,7 +375,7 @@ We deploy our strategy and compare it with a base strategy of holding the ETF fo
 
 ![https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-48-output-2.png](https://aaron3963.github.io/CSE_151A_Project/project_files/figure-html/cell-48-output-2.png)
 
-The conclusion is that our portfolio with this quant strategy surpassed the base strategy significantly. We got 10% gross profit within 6 months, which our base strategy was hard to maintain itself. 
+The conclusion is that our portfolio with this quant strategy surpassed the base strategy significantly. We got 10% gross profit within 6 months, which in our base strategy, was hard to maintain. 
 
 ### Summary
 
@@ -351,10 +386,10 @@ One major challenge was the dataset itself. Stock movements depend on a mix of n
 Our results are moderately believable—they outperform random guessing but remain far from reliable for decision-making. This reflects both the unpredictable nature of financial markets and the limitations of current modeling approaches.
 
 ## Conclusion
-Overall our second model performed worse than our expectations. Although it beat out the first model, it was very marginal compared to the hyperparameter tuning that was done. Some improvements that can be done to this model is to possibly create and ensemble with a time series model and transform the problem into a regression problem. We believe that there is a lot of noise in the data to do a simple classification, so reworking the problem may utilize the model the best. These changes could improve the model; however, we believe that the improvements would be limited due to the nature of the model and the data itself.
+Overall our second model performed worse than our expectations. Although it beat out the first model, it was very marginal compared to the hyperparameter tuning that was done. Some improvements that can be made to this model are to possibly create an ensemble with a time series model and transform the problem into a regression problem. We believe that there is a lot of noise in the data to do a simple classification, so reworking the problem may utilize the model the best. These changes could improve the model; however, we believe that the improvements would be limited due to the nature of the model and the data itself.
 
 Future Models
-Another that we plan to look into are LSTMs. These types of models perform in both NLP tasks and time series tasks. Since our problem is heavily dependent on those two things, LSTMs could be the perfect model. We have also already began working with BERT because it is bidirectional and it is specifically built for sentiment analysis. We believe that the combination of these facts along with attention can boost the accuracy on this dataset.
+Another that we plan to look into is LSTMs. These types of models perform in both NLP tasks and more importantly time series tasks. Since our problem is heavily dependent on those two things, LSTMs could be the perfect model. We have also already began working with BERT because it is bidirectional and it is specifically built for sentiment analysis. We believe that the combination of these facts along with attention can boost the accuracy of this dataset.
 
 
 ## Statement of Collaboration
@@ -369,15 +404,13 @@ Another that we plan to look into are LSTMs. These types of models perform in bo
   - Analyzed graphs from EDA to give direction in preprocessing
   - Co-developed custom transformer model
   - Fine-tuned transformer in terms of extra preprocessing, using stop words
-  - Created conclusions and analysis for milestone 3 and 4
+  - Created conclusions and analysis for milestones 3 and 4 and wrote the discussion on the models
 
 - **Sunan Xu**:
   - Analyzed the word distribution and their significance in the headlines of news data, 
   - Converted the data to and save them to do further analysis.  
   - Helped to built the LSTM model for Model 2, performed hyperparameter tuning, and compared it with the Transformer classifier.
   - Compiled the documentation and drafted the final report.
-
-
 
 - **Kelly**:
   - Collected and analyzed the S&P 500 stock data.
